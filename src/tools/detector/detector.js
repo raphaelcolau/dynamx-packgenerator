@@ -24,8 +24,7 @@ async function catchFiles() {
 function configType(file) {
     return {
         type: (() => {
-            if (file.includes('pack_info')) return 'pack_info';
-            else if (file.includes('vehicle_')) return 'vehicle';
+            if (file.includes('vehicle_')) return 'vehicle';
             else if (file.includes('trailer_')) return 'trailer';
             else if (file.includes('armor_')) return 'armor';
             else if (file.includes('wheel_')) return 'wheel';
@@ -45,9 +44,25 @@ function configType(file) {
 }
 
 export async function detector() {
-    let files = await catchFiles();
-    files.forEach(file => {
-        console.log(configType(file));
+    let dynamxFiles = {
+        vehicle: [],
+        trailer: [],
+        armor: [],
+        wheel: [],
+        engine: [],
+        sounds: [],
+        block_prop: [],
+        block: [],
+        boat: [],
+        helicopter: [],
+        plane: [],
+        unknown: []
+    }
+    const catchAllFiles = await catchFiles().then(files => {
+        files.forEach(file => {
+            dynamxFiles[configType(file).type].push(configType(file));
+        });
     });
-    return await catchFiles();
+
+    return dynamxFiles;
 }
