@@ -38,7 +38,7 @@ function configType(file) {
             else return 'unknown';
         })(),
         name: file.substring(file.lastIndexOf('\\') + 1, file.lastIndexOf('.dynx')),
-        dir: file.replace("\\", "/"),
+        dir: file.replaceAll("\\", "/"),
         content: fs.readFileSync("./Packs/" + file, 'utf8'),
     }
 }
