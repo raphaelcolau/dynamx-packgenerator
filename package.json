@@ -1,0 +1,16 @@
+{
+  "name": "dynamx-tools",
+  "version": "0.0.1",
+  "description": "Tools for parsing, updating and selling dynamx package",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Raphael Colau",
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^10.3.1"
+  }
+}
