@@ -3,8 +3,7 @@ import { detector } from "./tools/detector/detector.js";
 const files = await detector();
 detector()
 
-const obj = files.obj[5];
-console.log(obj.file);
+const obj = files.obj[2];
 obj.dependencies.forEach(dependency => {
-    console.log(dependency.file);
+    if (dependency) console.log(dependency.file);
 });

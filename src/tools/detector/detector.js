@@ -84,12 +84,16 @@ function getAllObj() {
 
 async function getObjDependencies(obj) {
     let dependencies = [];
-    const  lines = fs.readFileSync("./Packs/" + obj, 'utf8').split('\r\n');
+    const  lines = fs.readFileSync("./Packs/" + obj, 'utf8').split('\n');
     const dir = obj.substring(0, obj.lastIndexOf('\\')).replaceAll('\\', '/') + '/';
 
-    lines.forEach(line => {
-        if (line.startsWith('mtllib')) {
+    for(const line of lines) {
+        if (line.includes('mtllib')) {
             const mtl = line.replace('mtllib', '').replaceAll(' ', '').replaceAll('\n', '').replaceAll('\r', '')
+            if (mtl.length >= 256) {
+                console.log("mtl file name is too long. Skipping.");
+                continue;
+            } 
             const mtlContent = fs.readFileSync("./Packs/" + dir + mtl, 'utf8')
             dependencies.push({
                 file: mtl,
@@ -99,19 +103,32 @@ async function getObjDependencies(obj) {
             //Detect textures
             const mtlLines = mtlContent.split('\n');
             mtlLines.forEach(mtlLine => {
-                if (mtlLine.startsWith('map_Kd')) {
+                if (mtlLine.includes('map_Kd')) {
                     const texture = mtlLine.split(' ')[1].replaceAll('\n', '').replace('map_Kd', '').replaceAll('\r', '')
-                    dependencies.push({
-                        file: texture,
-                        content: fs.readFileSync("./Packs/" + dir + texture, 'utf8')
-                    });
+                    console.log(texture);
+                    try {
+                        const content = fs.readFileSync("./Packs/" + dir + texture, 'utf8')
+                        dependencies.push({
+                            file: texture,
+                            content: content,
+                        });
+                    } catch (err) {
+                        console.log(err);
+                    }
                 }
             });
         }
-    });
+    };
+    if (dependencies.length == 0) console.log("No dependencies found.");
 
-    //Detect collision files (*.dc)
+
+    return dependencies;
+}
+
+function getCollisionFiles(dir) {
+    let dependencies = [];
     const dotDC = glob('*.dc', { cwd: './Packs/' + dir });
+
     dotDC.then(dc => {
         dc.forEach(file => {
             dependencies.push({
@@ -120,9 +137,8 @@ async function getObjDependencies(obj) {
             });
         });
 
+        return dependencies;
     });
-    
-    return dependencies;
 }
 
 export async function detector() {
