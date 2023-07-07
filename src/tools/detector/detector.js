@@ -94,29 +94,36 @@ async function getObjDependencies(obj) {
                 console.log("mtl file name is too long. Skipping.");
                 continue;
             } 
-            const mtlContent = fs.readFileSync("./Packs/" + dir + mtl, 'utf8')
-            dependencies.push({
-                file: mtl,
-                content: mtlContent,
-            });
+            try {
+                const mtlContent = fs.readFileSync("./Packs/" + dir + mtl, 'utf8')
+                dependencies.push({
+                    file: mtl,
+                    content: mtlContent,
+                });
 
-            //Detect textures
-            const mtlLines = mtlContent.split('\n');
-            mtlLines.forEach(mtlLine => {
-                if (mtlLine.includes('map_Kd')) {
-                    const texture = mtlLine.split(' ')[1].replaceAll('\n', '').replace('map_Kd', '').replaceAll('\r', '')
-                    console.log(texture);
-                    try {
-                        const content = fs.readFileSync("./Packs/" + dir + texture, 'utf8')
-                        dependencies.push({
-                            file: texture,
-                            content: content,
-                        });
-                    } catch (err) {
-                        console.log(err);
+                //Detect textures
+                const mtlLines = mtlContent.split('\n');
+                mtlLines.forEach(mtlLine => {
+                    if (mtlLine.includes('map_Kd')) {
+                        const texture = mtlLine.split(' ')[1].replaceAll('\n', '').replace('map_Kd', '').replaceAll('\r', '')
+                        try {
+
+                            const content = fs.readFileSync("./Packs/" + dir + texture, 'utf8')
+                            dependencies.push({
+                                file: texture,
+                                content: content,
+                            });
+
+                        } catch (err) {
+                            console.log("[ERROR] " + err.code + ":" + err.path);
+                        }
                     }
-                }
-            });
+                });
+
+            } catch (err) {
+                console.log("[ERROR] " + err.code + ":" + err.path);
+            }
+
         }
     };
     if (dependencies.length == 0) console.log("No dependencies found.");
