@@ -67,20 +67,31 @@ function parseDependendies(file) {
     return dependencies;
 }
 
-function getAllObj() {
+async function getAllObj() {
     let obj = [];
-    let files = glob('**/*.obj', { cwd: './Packs' });
-    files.then(files => {
-        files.forEach(async file => {
-            obj.push({
-                file: file.replaceAll('\\', '/'),
-                dependencies: await getObjDependencies(file),
-                content: fs.readFileSync("./Packs/" + file, 'utf8')
-            });
-        });
-    }); 
+    let files = await glob('**/*.obj', { cwd: './Packs' });
+    const promises = files.map(async file => {
+      const dependencies = await getObjDependencies(file);
+      return {
+        file: file.replaceAll('\\', '/'),
+        dependencies: dependencies,
+        content: fs.readFileSync("./Packs/" + file, 'utf8')
+      };
+    });
+    obj = await Promise.all(promises);
+  
+    //Display all the obj files and their dependencies
+    /*
+    obj.forEach(obj => {
+      console.log("File: " + obj.file);
+      obj.dependencies.forEach(dependency => {
+        if (dependency) console.log("\t" + dependency.file);
+      });
+    });
+    */
+  
     return obj;
-}
+  }
 
 async function getObjDependencies(obj) {
     let dependencies = [];
@@ -121,32 +132,42 @@ async function getObjDependencies(obj) {
                 });
 
             } catch (err) {
-                console.log("[ERROR] " + err.code + ":" + err.path);
+                console.log("[ERROR] " + err.code + ": " + err.path);
             }
 
         }
     };
     if (dependencies.length == 0) console.log("No dependencies found.");
 
+    const collisionFiles = await getCollisionFiles(dir);
 
-    return dependencies;
+    return dependencies.concat(collisionFiles);
 }
 
 function getCollisionFiles(dir) {
-    let dependencies = [];
-    const dotDC = glob('*.dc', { cwd: './Packs/' + dir });
-
-    dotDC.then(dc => {
-        dc.forEach(file => {
-            dependencies.push({
-                file: file,
-                content: fs.readFileSync("./Packs/" + dir + file, 'utf8')
-            });
+    const dc = glob('*.dc', { cwd: './Packs/' + dir });
+  
+    return dc.then(files => {
+      const promises = files.map(file => {
+        return new Promise((resolve, reject) => {
+          fs.readFile("./Packs/" + dir + file, 'utf8', (err, content) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            
+            const dependency = {
+              file: file,
+              content: content,
+            };
+            resolve(dependency);
+          });
         });
-
-        return dependencies;
+      });
+  
+      return Promise.all(promises);
     });
-}
+  }
 
 export async function detector() {
     let dynamxFiles = {
@@ -161,7 +182,7 @@ export async function detector() {
         boat: [],
         helicopter: [],
         plane: [],
-        obj: getAllObj(),
+        obj: await getAllObj(),
         unknown: []
     }
     const catchAllFiles = await catchFiles().then(files => {
