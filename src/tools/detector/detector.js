@@ -1,6 +1,5 @@
-import { dir } from 'console';
 import fs from 'fs';
-import { Glob, glob } from 'glob';
+import {  glob } from 'glob';
 
 
 async function catchFiles() {
@@ -40,7 +39,90 @@ function configType(file) {
         name: file.substring(file.lastIndexOf('\\') + 1, file.lastIndexOf('.dynx')),
         dir: file.replaceAll("\\", "/"),
         content: fs.readFileSync("./Packs/" + file, 'utf8'),
+        dependencies: [],
     }
+}
+
+function parseDependendies(file) {
+    let dependencies = [];
+    let lines = file.content.split('\r\n');
+
+    lines.forEach(line => {
+        const truncline = line.replaceAll('\t', '');
+        if (truncline.startsWith('Model')) {
+            const obj = truncline.replace('Model:', '').replaceAll(' ', '')
+            if (!dependencies.includes(obj)) dependencies.push(obj);
+        } else if (truncline.startsWith('DefaultEngine')) {
+            const engine = truncline.replace('DefaultEngine:', '').replaceAll(' ', '').split('.')[1];
+            if (!dependencies.includes(engine)) dependencies.push(engine);
+        } else if (truncline.startsWith('DefaultSounds')) {
+            const sounds = truncline.replace('DefaultSounds:', '').replaceAll(' ', '').split('.')[1];
+            if (!dependencies.includes(sounds)) dependencies.push(sounds);
+        } else if (truncline.includes('AttachedWheel')) {
+            const wheel = truncline.replace('AttachedWheel:', '').replaceAll(' ', '').split('.')[1];
+            if (!dependencies.includes(wheel)) dependencies.push(wheel);
+        }
+    });
+
+    return dependencies;
+}
+
+function getAllObj() {
+    let obj = [];
+    let files = glob('**/*.obj', { cwd: './Packs' });
+    files.then(files => {
+        files.forEach(async file => {
+            obj.push({
+                file: file.replaceAll('\\', '/'),
+                dependencies: await getObjDependencies(file),
+                content: fs.readFileSync("./Packs/" + file, 'utf8')
+            });
+        });
+    }); 
+    return obj;
+}
+
+async function getObjDependencies(obj) {
+    let dependencies = [];
+    const  lines = fs.readFileSync("./Packs/" + obj, 'utf8').split('\r\n');
+    const dir = obj.substring(0, obj.lastIndexOf('\\')).replaceAll('\\', '/') + '/';
+
+    lines.forEach(line => {
+        if (line.startsWith('mtllib')) {
+            const mtl = line.replace('mtllib', '').replaceAll(' ', '').replaceAll('\n', '').replaceAll('\r', '')
+            const mtlContent = fs.readFileSync("./Packs/" + dir + mtl, 'utf8')
+            dependencies.push({
+                file: mtl,
+                content: mtlContent,
+            });
+
+            //Detect textures
+            const mtlLines = mtlContent.split('\n');
+            mtlLines.forEach(mtlLine => {
+                if (mtlLine.startsWith('map_Kd')) {
+                    const texture = mtlLine.split(' ')[1].replaceAll('\n', '').replace('map_Kd', '').replaceAll('\r', '')
+                    dependencies.push({
+                        file: texture,
+                        content: fs.readFileSync("./Packs/" + dir + texture, 'utf8')
+                    });
+                }
+            });
+        }
+    });
+
+    //Detect collision files (*.dc)
+    const dotDC = glob('*.dc', { cwd: './Packs/' + dir });
+    dotDC.then(dc => {
+        dc.forEach(file => {
+            dependencies.push({
+                file: file,
+                content: fs.readFileSync("./Packs/" + dir + file, 'utf8')
+            });
+        });
+
+    });
+    
+    return dependencies;
 }
 
 export async function detector() {
@@ -56,11 +138,15 @@ export async function detector() {
         boat: [],
         helicopter: [],
         plane: [],
+        obj: getAllObj(),
         unknown: []
     }
     const catchAllFiles = await catchFiles().then(files => {
         files.forEach(file => {
             dynamxFiles[configType(file).type].push(configType(file));
+        });
+        dynamxFiles.vehicle.forEach(vehicle => {
+            vehicle.dependencies = parseDependendies(vehicle);
         });
     });
 
