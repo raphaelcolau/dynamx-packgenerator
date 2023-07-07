@@ -91,7 +91,7 @@ async function getAllObj() {
     */
   
     return obj;
-  }
+}
 
 async function getObjDependencies(obj) {
     let dependencies = [];
@@ -167,7 +167,7 @@ function getCollisionFiles(dir) {
   
       return Promise.all(promises);
     });
-  }
+}
 
 export async function detector() {
     let dynamxFiles = {
@@ -196,3 +196,5 @@ export async function detector() {
 
     return dynamxFiles;
 }
+
+//TODO: Create the dependency tree for each file type
