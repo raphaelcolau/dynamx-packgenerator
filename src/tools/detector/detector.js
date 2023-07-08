@@ -183,18 +183,92 @@ export async function detector() {
         helicopter: [],
         plane: [],
         obj: await getAllObj(),
-        unknown: []
+        unknown: [],
+        total: 0,
     }
+
     const catchAllFiles = await catchFiles().then(files => {
+        //Put all files in their respective arrays
         files.forEach(file => {
             dynamxFiles[configType(file).type].push(configType(file));
         });
+
+        //Parse all dependencies for vehicle files
         dynamxFiles.vehicle.forEach(vehicle => {
             vehicle.dependencies = parseDependendies(vehicle);
         });
+
+        //Parse all dependencies for trailer files
+        dynamxFiles.trailer.forEach(trailer => {
+            trailer.dependencies = parseDependendies(trailer);
+        });
+
+        //Parse all dependencies for armor files
+        dynamxFiles.armor.forEach(armor => {
+            armor.dependencies = parseDependendies(armor);
+        });
+
+        //Parse all dependencies for wheel files
+        dynamxFiles.wheel.forEach(wheel => {
+            wheel.dependencies = parseDependendies(wheel);
+        });
+
+        //Parse all dependencies for block_prop files
+        dynamxFiles.block_prop.forEach(block_prop => {
+            block_prop.dependencies = parseDependendies(block_prop);
+        });
+
+        //Parse all dependencies for block files
+        dynamxFiles.block.forEach(block => {
+            block.dependencies = parseDependendies(block);
+        });
+
+        //Parse all dependencies for boat files
+        dynamxFiles.boat.forEach(boat => {
+            boat.dependencies = parseDependendies(boat);
+        });
+
+        //Parse all dependencies for helicopter files
+        dynamxFiles.helicopter.forEach(helicopter => {
+            helicopter.dependencies = parseDependendies(helicopter);
+        });
+
+        //Parse all dependencies for plane files
+        dynamxFiles.plane.forEach(plane => {
+            plane.dependencies = parseDependendies(plane);
+        });
+
     });
 
+    parsedFilesNumber(dynamxFiles);
+
     return dynamxFiles;
+}
+
+export function parsedFilesNumber(parsedFiles) {
+    let total = 0;
+    for (const key in parsedFiles) {
+        if (key == "total") continue;
+        total += parsedFiles[key].length;
+    }
+
+    console.log("Parsed files:");
+    console.log("\tVehicle: " + parsedFiles.vehicle.length);
+    console.log("\tTrailer: " + parsedFiles.trailer.length);
+    console.log("\tArmor: " + parsedFiles.armor.length);
+    console.log("\tWheel: " + parsedFiles.wheel.length);
+    console.log("\tEngine: " + parsedFiles.engine.length);
+    console.log("\tSounds: " + parsedFiles.sounds.length);
+    console.log("\tBlock Prop: " + parsedFiles.block_prop.length);
+    console.log("\tBlock: " + parsedFiles.block.length);
+    console.log("\tBoat: " + parsedFiles.boat.length);
+    console.log("\tHelicopter: " + parsedFiles.helicopter.length);
+    console.log("\tPlane: " + parsedFiles.plane.length);
+    console.log("\tObj: " + parsedFiles.obj.length);
+    console.log("\tUnknown: " + parsedFiles.unknown.length);
+    console.log("Total: " + total);
+
+    return total;
 }
 
 //TODO: Create the dependency tree for each file type
