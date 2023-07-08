@@ -271,4 +271,4 @@ export function parsedFilesNumber(parsedFiles) {
     return total;
 }
 
-//TODO: Create the dependency tree for each file type
+//TODO: Create the dependency tree for each sound file
