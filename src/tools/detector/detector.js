@@ -1,5 +1,6 @@
 import fs from 'fs';
 import {  glob } from 'glob';
+import chalk from 'chalk';
 
 
 async function catchFiles() {
@@ -282,20 +283,20 @@ export function parsedFilesNumber(parsedFiles) {
     }
 
     console.log("Parsed files:");
-    console.log("\tVehicle: " + parsedFiles.vehicle.length);
-    console.log("\tTrailer: " + parsedFiles.trailer.length);
-    console.log("\tArmor: " + parsedFiles.armor.length);
-    console.log("\tWheel: " + parsedFiles.wheel.length);
-    console.log("\tEngine: " + parsedFiles.engine.length);
-    console.log("\tSounds: " + parsedFiles.sounds.length);
-    console.log("\tBlock Prop: " + parsedFiles.block_prop.length);
-    console.log("\tBlock: " + parsedFiles.block.length);
-    console.log("\tBoat: " + parsedFiles.boat.length);
-    console.log("\tHelicopter: " + parsedFiles.helicopter.length);
-    console.log("\tPlane: " + parsedFiles.plane.length);
-    console.log("\tObj: " + parsedFiles.obj.length);
-    console.log("\tUnknown: " + parsedFiles.unknown.length);
-    console.log("Total: " + total);
+    console.log("\tVehicle: " + chalk.yellow(parsedFiles.vehicle.length));
+    console.log("\tTrailer: " + chalk.yellow(parsedFiles.trailer.length));
+    console.log("\tArmor: " + chalk.yellow(parsedFiles.armor.length));
+    console.log("\tWheel: " + chalk.yellow(parsedFiles.wheel.length));
+    console.log("\tEngine: " + chalk.yellow(parsedFiles.engine.length));
+    console.log("\tSounds: " + chalk.yellow(parsedFiles.sounds.length));
+    console.log("\tBlock Prop: " + chalk.yellow(parsedFiles.block_prop.length));
+    console.log("\tBlock: " + chalk.yellow(parsedFiles.block.length));
+    console.log("\tBoat: " + chalk.yellow(parsedFiles.boat.length));
+    console.log("\tHelicopter: " + chalk.yellow(parsedFiles.helicopter.length));
+    console.log("\tPlane: " + chalk.yellow(parsedFiles.plane.length));
+    console.log("\tObj: " + chalk.yellow(parsedFiles.obj.length));
+    console.log("\tUnknown: " + chalk.yellow(parsedFiles.unknown.length));
+    console.log("Total: " + chalk.yellow(total));
 
     return total;
 }

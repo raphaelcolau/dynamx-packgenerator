@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 function packCreator(files, input, pack) {
     const command = input.trim();
     const element = [];
@@ -5,9 +7,9 @@ function packCreator(files, input, pack) {
     
     if (pack.step === 0) {
         pack.packId = [...Array(6)].map(() => Math.random().toString(36).charAt(2)).join('');
-        console.log("Creator mode activated. Type /exit to exit creator mode.");
-        console.log("Your pack id is: " + pack.packId);
-        console.log("Press enter to continue. Type your pack name to change it.");
+        console.log(chalk.green("Creator mode activated.") + " Type /exit to exit creator mode.");
+        console.log("Your pack id is: " + chalk.yellow(pack.packId));
+        console.log("Press enter to continue. Type your pack name to change it.");  
         pack.step++;
     } else if (step === 1) {
         if (command !== "") {
