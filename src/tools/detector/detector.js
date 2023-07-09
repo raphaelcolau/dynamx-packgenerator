@@ -169,6 +169,30 @@ function getCollisionFiles(dir) {
     });
 }
 
+function parseSoundDependendies(file) {
+    const lines = file.content.split('\n');
+    let dependencies = [];
+    const pack = file.dir.split('/')[0];
+
+    lines.forEach(line => {
+        if (line.includes('Sound:')) {
+            const sound = line.trim().split(' ')[1].replaceAll('\n', '').replaceAll('\r', '') + ".ogg";
+            if (!dependencies.includes(sound)) {
+                try {
+                    dependencies.push({
+                        file: sound,
+                        content: fs.readFileSync("./Packs/" + pack + "/assets/dynamxmod/sounds/" + sound, 'utf8')
+                    });
+                } catch (err) {
+                    console.log("[ERROR] " + err.code + ": " + err.path);
+                }
+            }
+        }
+    });
+
+    return dependencies;
+}
+
 export async function detector() {
     let dynamxFiles = {
         vehicle: [],
@@ -238,6 +262,11 @@ export async function detector() {
             plane.dependencies = parseDependendies(plane);
         });
 
+        //Parse all dependencies for sounds files
+        dynamxFiles.sounds.forEach(sounds => {
+            sounds.dependencies = parseSoundDependendies(sounds);
+        });
+
     });
 
     parsedFilesNumber(dynamxFiles);
@@ -270,5 +299,3 @@ export function parsedFilesNumber(parsedFiles) {
 
     return total;
 }
-
-//TODO: Create the dependency tree for each sound file

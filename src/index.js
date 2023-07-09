@@ -8,4 +8,10 @@ const files = await detector();
 //     if (dependency) console.log("Dependency: " + dependency.file);
 // });
 
-console.log(files.block_prop[2]);
+console.log(files.sounds[2].dir);
+console.log(files.sounds[2].content);
+files.sounds[2].dependencies.forEach(dependency => {
+    if (dependency) console.log("Dependency: " + dependency.file);
+});
+
+//TODO: Create lang file [Pack]/assets/lang/en_US.lang
