@@ -300,3 +300,5 @@ export function parsedFilesNumber(parsedFiles) {
 
     return total;
 }
+
+//TODO: Add sounds for klaxon, horn, siren etc.
