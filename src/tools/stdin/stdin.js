@@ -2,7 +2,6 @@ import chalk from 'chalk';
 
 function packCreator(files, input, pack) {
     const command = input.trim();
-    const element = [];
     console.log(pack);
     
     if (pack.step === 0) {
@@ -11,7 +10,9 @@ function packCreator(files, input, pack) {
         console.log("Your pack id is: " + chalk.yellow(pack.packId));
         console.log("Press enter to continue. Type your pack name to change it.");  
         pack.step++;
-    } else if (step === 1) {
+    } 
+    /* change packId name */
+    else if (pack.step === 1) {
         if (command !== "") {
             //regex to match only a-z 0-9 and no spaces
             const regex = new RegExp("^[a-zA-Z0-9]+$");
@@ -22,7 +23,7 @@ function packCreator(files, input, pack) {
             } else if (command.match(regex) == null) {
                 console.log("Pack name must only contain letters and numbers.");
             } else {
-                console.log("New pack name: " + command);
+                console.log("New pack name: " + chalk.green(command));
                 pack.packId = command;
                 pack.step++;
             }
@@ -30,6 +31,54 @@ function packCreator(files, input, pack) {
             console.log("Pack name: " + pack.packId);
             pack.step++;
         }
+        console.log("Press corresponding number to add an element to your pack.");
+        console.log("Press enter to continue. Type /exit to exit creator mode.");
+        console.log(chalk.yellow("1") + " - Vehicle");
+        console.log(chalk.yellow("2") + " - Trailer");
+        console.log(chalk.yellow("3") + " - Armor");
+        console.log(chalk.yellow("4") + " - Block");
+        console.log(chalk.yellow("5") + " - Block Prop");
+        console.log(chalk.yellow("6") + " - Boat");
+        console.log(chalk.yellow("7") + " - Plane");
+    }
+    /* add pack element */
+    else if (pack.step === 2) {
+        if (command == "") {
+            console.log("Press corresponding number to add an element to your pack.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            console.log(chalk.yellow("1") + " - Vehicle");
+            console.log(chalk.yellow("2") + " - Trailer");
+            console.log(chalk.yellow("3") + " - Armor");
+            console.log(chalk.yellow("4") + " - Block");
+            console.log(chalk.yellow("5") + " - Block Prop");
+            console.log(chalk.yellow("6") + " - Boat");
+            console.log(chalk.yellow("7") + " - Plane");
+            console.log(chalk.yellow("Yes") + " - to continue");
+        }
+        if (command == "1") {
+            console.log("Vehicle selected.");
+            let n = 0;
+            files.vehicle.forEach(file => {
+                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("vehicle_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("vehicle_", "").replace(".dynx", ""));
+                n++;
+            });
+            console.log("\nType the number of the vehicle you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple vehicles.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            pack.step = 2.1;
+        }
+    } else if (Math.floor(pack.step / 2) == 1) {
+        let type = Math.floor((pack.step % 2) * 10);
+        const toAdd = command.split(/[\s,]+/);
+        if (type == 1) { toAdd.forEach((e) => { pack.elements.push(files.vehicle[e]); }); }
+        if (type == 2) { toAdd.forEach((e) => { pack.elements.push(files.trailer[e]); }); }
+        if (type == 3) { toAdd.forEach((e) => { pack.elements.push(files.armor[e]); }); }
+        if (type == 4) { toAdd.forEach((e) => { pack.elements.push(files.block[e]); }); }
+        if (type == 5) { toAdd.forEach((e) => { pack.elements.push(files.block_prop[e]); }); }
+        if (type == 6) { toAdd.forEach((e) => { pack.elements.push(files.boat[e]); }); }
+        if (type == 7) { toAdd.forEach((e) => { pack.elements.push(files.plane[e]); }); }
+        pack.step = 2;
+        console.log("Added " + chalk.green(toAdd.length) + " elements to your pack.");
     }
 
     return pack;
