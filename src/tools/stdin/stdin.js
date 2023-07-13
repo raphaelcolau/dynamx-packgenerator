@@ -1,14 +1,61 @@
 import chalk from 'chalk';
 
+function stepOutputIndicator(pack, command) {
+    if (pack.step == 0) {
+        console.log(chalk.green("Creator mode activated.") + " Type /exit to exit creator mode.");
+        console.log("Your pack id is: " + chalk.yellow(pack.packId));
+        console.log("Press enter to continue. Type your pack name to change it.");  
+    } else if (pack.step == 1 || pack.step == 2 && !command) {
+        console.log("Type the number to add an element to your pack.");
+        console.log("Type /exit to exit creator mode.");
+        console.log(chalk.yellow("1") + " - Vehicle");
+        console.log(chalk.yellow("2") + " - Trailer");
+        console.log(chalk.yellow("3") + " - Armor");
+        console.log(chalk.yellow("4") + " - Block");
+        console.log(chalk.yellow("5") + " - Block Prop");
+        console.log(chalk.yellow("6") + " - Boat");
+        console.log(chalk.yellow("7") + " - Plane");
+        console.log(chalk.yellow("ok") + " - Finish pack creation");
+    } else if (pack.step == 2 && command) {
+        if (command == "1") {
+            console.log("\nType the number of the vehicle you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple vehicles.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        } else if (command == "2") {
+            console.log("\nType the number of the trailer you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple trailers.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        } else if (command == "3") {
+            console.log("\nType the number of the trailer you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple armors.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        } else if (command == "4") {
+            console.log("\nType the number of the trailer you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple blocks.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        } else if (command == "5") {
+            console.log("\nType the number of the trailer you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple block_props.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        } else if (command == "6") {
+            console.log("\nType the number of the trailer you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple boats.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        } else if (command == "7") {
+            console.log("\nType the number of the trailer you want to add to your pack.");
+            console.log("You can also put the number separated by a space or a comma to add multiple planes.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        }
+    }
+}
+
 function packCreator(files, input, pack) {
     const command = input.trim();
     console.log({...pack, elements: pack.elements.length});
     
     if (pack.step === 0) {
         pack.packId = [...Array(6)].map(() => Math.random().toString(36).charAt(2)).join('');
-        console.log(chalk.green("Creator mode activated.") + " Type /exit to exit creator mode.");
-        console.log("Your pack id is: " + chalk.yellow(pack.packId));
-        console.log("Press enter to continue. Type your pack name to change it.");  
+        stepOutputIndicator(pack);
         pack.step++;
     } 
     /* change packId name */
@@ -31,29 +78,13 @@ function packCreator(files, input, pack) {
             console.log("Pack name: " + pack.packId);
             pack.step++;
         }
-        console.log("Type the number to add an element to your pack.");
-        console.log("Type /exit to exit creator mode.");
-        console.log(chalk.yellow("1") + " - Vehicle");
-        console.log(chalk.yellow("2") + " - Trailer");
-        console.log(chalk.yellow("3") + " - Armor");
-        console.log(chalk.yellow("4") + " - Block");
-        console.log(chalk.yellow("5") + " - Block Prop");
-        console.log(chalk.yellow("6") + " - Boat");
-        console.log(chalk.yellow("7") + " - Plane");
+        stepOutputIndicator(pack);
     }
     /* add pack element */
     else if (pack.step === 2) {
+        let n = 0;
         if (command == "") {
-            console.log("Type the number to add an element to your pack.");
-            console.log("Type /exit to exit creator mode.");
-            console.log(chalk.yellow("1") + " - Vehicle");
-            console.log(chalk.yellow("2") + " - Trailer");
-            console.log(chalk.yellow("3") + " - Armor");
-            console.log(chalk.yellow("4") + " - Block");
-            console.log(chalk.yellow("5") + " - Block Prop");
-            console.log(chalk.yellow("6") + " - Boat");
-            console.log(chalk.yellow("7") + " - Plane");
-            console.log(chalk.yellow("OK") + " - to continue");
+            stepOutputIndicator(pack);
         } else if (command.toLowerCase() == "ok") {
             if (pack.elements.length == 0) {
                 console.log(chalk.red("You must add at least one element to your pack."));
@@ -65,80 +96,59 @@ function packCreator(files, input, pack) {
         }
          else if (command == "1") {
             console.log(chalk.green("Vehicle selected."));
-            let n = 0;
             files.vehicle.forEach(file => {
-                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("vehicle_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("vehicle_", "").replace(".dynx", ""));
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("vehicle_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("vehicle_", "").replace(".dynx", ""));
                 n++;
             });
-            console.log("\nType the number of the vehicle you want to add to your pack.");
-            console.log("You can also put the number separated by a space or a comma to add multiple vehicles.");
-            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            stepOutputIndicator(pack, command);
             pack.step = 2.1;
         } else if (command == "2") {
             console.log(chalk.green("Trailer selected."));
-            let n = 0;
             files.trailer.forEach(file => {
-                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("trailer_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("trailer_", "").replace(".dynx", ""));
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("trailer_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("trailer_", "").replace(".dynx", ""));
                 n++;
             });
-            console.log("\nType the number of the trailer you want to add to your pack.");
-            console.log("You can also put the number separated by a space or a comma to add multiple trailers.");
-            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            stepOutputIndicator(pack, command);
             pack.step = 2.2;
         } else if (command == "3") {
             console.log(chalk.green("Armor selected."));
-            let n = 0;
             files.armor.forEach(file => {
-                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("armor_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("armor_", "").replace(".dynx", ""));
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("armor_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("armor_", "").replace(".dynx", ""));
                 n++;
             });
-            console.log("\nType the number of the trailer you want to add to your pack.");
-            console.log("You can also put the number separated by a space or a comma to add multiple armors.");
-            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            stepOutputIndicator(pack, command);
             pack.step = 2.3;
         } else if (command == "4") {
             console.log(chalk.green("Block selected."));
-            let n = 0;
             files.block.forEach(file => {
-                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("block_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("block_", "").replace(".dynx", ""));
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("block_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("block_", "").replace(".dynx", ""));
                 n++;
             });
-            console.log("\nType the number of the trailer you want to add to your pack.");
-            console.log("You can also put the number separated by a space or a comma to add multiple blocks.");
-            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            stepOutputIndicator(pack, command);
             pack.step = 2.4;
         } else if (command == "5") {
             console.log(chalk.green("Block_prop selected."));
-            let n = 0;
             files.block_prop.forEach(file => {
-                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("block_prop_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("block_prop_", "").replace(".dynx", ""));
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("block_prop_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("block_prop_", "").replace(".dynx", ""));
                 n++;
             });
-            console.log("\nType the number of the trailer you want to add to your pack.");
-            console.log("You can also put the number separated by a space or a comma to add multiple block_props.");
-            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            stepOutputIndicator(pack, command);
             pack.step = 2.5;
         } else if (command == "6") {
             console.log(chalk.green("Boat selected."));
-            let n = 0;
             files.boat.forEach(file => {
-                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("boat_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("boat_", "").replace(".dynx", ""));
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("boat_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("boat_", "").replace(".dynx", ""));
                 n++;
             });
-            console.log("\nType the number of the trailer you want to add to your pack.");
-            console.log("You can also put the number separated by a space or a comma to add multiple boats.");
-            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            stepOutputIndicator(pack, command);
             pack.step = 2.6;
         } else if (command == "7") {
             console.log(chalk.green("Plane selected."));
-            let n = 0;
             files.plane.forEach(file => {
-                    console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("plane_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("plane_", "").replace(".dynx", ""));
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("plane_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("plane_", "").replace(".dynx", ""));
                 n++;
             });
-            console.log("\nType the number of the trailer you want to add to your pack.");
-            console.log("You can also put the number separated by a space or a comma to add multiple planes.");
-            console.log("Press enter to continue. Type /exit to exit creator mode.");
+            stepOutputIndicator(pack, command);
             pack.step = 2.7;
         }
     } else if (pack.step >= 2 && pack.step < 3) {
@@ -152,17 +162,7 @@ function packCreator(files, input, pack) {
         if (type == 6) { toAdd.forEach((e) => { pack.elements.push(files.boat[e]); }); }
         if (type == 7) { toAdd.forEach((e) => { pack.elements.push(files.plane[e]); }); }
         pack.step = 2;
-        console.log("Added " + chalk.green(toAdd.length) + " elements to your pack.");
-        console.log("Type the corresponding number to add an element to your pack.");
-        console.log("Type /exit to exit creator mode.");
-        console.log(chalk.yellow("1") + " - Vehicle");
-        console.log(chalk.yellow("2") + " - Trailer");
-        console.log(chalk.yellow("3") + " - Armor");
-        console.log(chalk.yellow("4") + " - Block");
-        console.log(chalk.yellow("5") + " - Block Prop");
-        console.log(chalk.yellow("6") + " - Boat");
-        console.log(chalk.yellow("7") + " - Plane");
-        console.log(chalk.yellow("OK") + " - to continue");
+        stepOutputIndicator(pack);
     }
     /* Generate and protect the pack */
     else if (pack.step = 3) {
@@ -227,6 +227,8 @@ export function stdinListener(files) {
                 if (command.startsWith("/pack create")) {
                     inCreatorMode = true;
                     packCreator(files, input, pack);
+                } else {
+                    console.log("Invalid command. Type /help to see available commands.");
                 }
             } else if (command === "/exit") {
                 process.exit(); // Quitter le processus
