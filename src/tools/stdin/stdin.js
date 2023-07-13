@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import fs from 'fs';
 
 function stepOutputIndicator(pack, command) {
     if (pack.step == 0) {
@@ -177,6 +178,7 @@ function packCreator(files, input, pack) {
         } else {
             console.log("Do you want to protect your pack ?" + chalk.yellow(" (Yes/No)"));
         }
+        generatePack(files, pack);
     }
 
     return pack;
@@ -199,6 +201,7 @@ export function stdinListener(files) {
                 console.log('-- Help --');
                 console.log('\t/help - Show this help');
                 console.log('\t/pack - help for pack command');
+                console.log('\t/clear - clear build folder');
                 console.log('\t/list <type>');
             } else if (command === "/pack") {
                 console.log("/pack create <name> - Create a new pack");
@@ -207,6 +210,9 @@ export function stdinListener(files) {
             } else if (command === "/list") {
                 console.log("/list <type> - List all files of a type");
                 console.log("\ttype: vehicle, trailer, armor, wheel, engine, sounds, block, block_prop, boat, plane, obj, unknown");
+            } else if (command === "/clear") {
+                clearOutputFolder();
+                console.log("Build folder cleared.");
             } else if (command.startsWith("/list ")) {
                 const type = command.split(" ")[1];
                 if (!files[type]) {
@@ -250,7 +256,7 @@ export function stdinListener(files) {
     
     process.stdin.setEncoding("utf8");
     process.stdin.on("data", async (data) => {
-    const input = data.trim(); // Supprimer les espaces inutiles en début et fin de l'entrée
+    const input = data.trim();
     
     await processInput(input);
     
@@ -259,8 +265,30 @@ export function stdinListener(files) {
     });
     
     process.stdin.on("/exit", () => {
-        process.exit(); // Quitter le processus si l'entrée est fermée
+        process.exit();
     });
     
     process.stdout.write("> ");
+}
+
+function clearOutputFolder() {
+    const outputDir = "./builds/";
+    if (fs.existsSync(outputDir)) {
+        fs.rm(outputDir);
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+}
+
+function generatePack(files, pack) {
+    const ouputDir = "./builds/" + pack.packId + "/";
+    if (!fs.existsSync(ouputDir)) {
+        fs.mkdirSync(ouputDir, { recursive: true });
+    }
+
+    console.log(pack.elements);
+    pack.elements.forEach(element => {
+        const dir = element.file ? element.file : element.dir;
+
+        fs.mkdirSync(ouputDir + dir, { recursive: true });
+    });
 }
