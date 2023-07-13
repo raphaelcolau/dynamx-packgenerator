@@ -12,6 +12,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 #Dynamx's Files
 Packs/
+/Builds/
 
 # Runtime data
 pids
