@@ -284,19 +284,23 @@ function clearOutputFolder() {
     }
 }
 
-function generateDependencies(files, dependencies, outputDir) {
-    const type = (() => {
-        if (dependencies.startsWith("vehicle_")) return vehicle;
-        if (dependencies.startsWith("trailer_")) return trailer;
-        if (dependencies.startsWith("armor_")) return armor;
-        if (dependencies.startsWith("wheel_")) return wheel;
-        if (dependencies.startsWith("engine_")) return engine;
-        if (dependencies.startsWith("sounds_")) return sounds;
-        if (dependencies.startsWith("block_")) return block;
-        if (dependencies.startsWith("block_prop_")) return block_prop;
-        if (dependencies.startsWith("boat_")) return boat;
-        if (dependencies.startsWith("plane_")) return plane;
-        if (dependencies.startsWith("obj/")) return obj;
+function getType(file) {
+    return (() => {
+        if (file.startsWith("vehicle_")) return       "vehicle";
+        if (file.startsWith("trailer_")) return       "trailer";
+        if (file.startsWith("armor_")) return         "armor";
+        if (file.startsWith("wheel_")) return         "wheel";
+        if (file.startsWith("engine_")) return        "engine";
+        if (file.startsWith("sounds_")) return        "sounds";
+        if (file.startsWith("block_")) return         "block";
+        if (file.startsWith("block_prop_")) return    "block_prop";
+        if (file.startsWith("boat_")) return          "boat";
+        if (file.startsWith("plane_")) return         "plane";
+        if (file.startsWith("obj/")) return           "obj";
+        return "unknown";
+    })()
+}
+
     })()
 
     const dependenciesFile = files[type].filter(file => file.file ? file.file.startsWith(dependencies) : file.dir.startsWith(dependencies));
