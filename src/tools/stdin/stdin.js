@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs';
-import { type } from 'os';
+import archiver from 'archiver';
+import path from 'path';
 
 function stepOutputIndicator(pack, command) {
     if (pack.step == 0) {
@@ -345,6 +346,15 @@ function generateDependencies(files, dependency, outputDir) {
     }
 }
 
+function getSubdirectoryNames(directoryPath) {
+    const directoryContents = fs.readdirSync(directoryPath);
+    const subdirectoryNames = directoryContents.filter(item => {
+        const itemPath = path.join(directoryPath, item);
+        return fs.statSync(itemPath).isDirectory();
+    });
+    return subdirectoryNames;
+}
+
 function generatePack(files, pack) {
     const outputDir = "./builds/" + pack.packId + "/";
     if (!fs.existsSync(outputDir)) {
@@ -368,5 +378,20 @@ function generatePack(files, pack) {
         fs.writeFileSync(outputDir + origin, element.content);
     });
 
-    console.log(chalk.green("Pack generated: ") + pack.packId);
+    //Zip the DartcherPack folder recursively inside the outputDir
+    const packFolderName = getSubdirectoryNames(outputDir)[0];
+    console.log("Pack folder name: " + packFolderName);
+
+    const output = fs.createWriteStream(outputDir + packFolderName +"-"+ pack.packId + ".dnxpack");
+    const archive = archiver("zip", {zlib: { level: 1 }}); // Sets the compression level. 1 = best speed, 9 = best compression
+    archive.pipe(output);
+    archive.directory(outputDir + packFolderName, false);
+    archive.finalize();
+    output.on("close", () => {
+        console.log(chalk.green("Pack created: ") + outputDir + packFolderName +"-"+ pack.packId + ".zip");
+    });
+    output.on("end", () => {
+        console.log("Data has been drained");
+    });
+
 }
