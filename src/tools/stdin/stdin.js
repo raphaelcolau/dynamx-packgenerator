@@ -274,7 +274,7 @@ export function stdinListener(files) {
 function clearOutputFolder() {
     const outputDir = "./builds/";
     if (fs.existsSync(outputDir)) {
-        fs.rmdir(outputDir, { recursive: true }, (err) => {
+        fs.rm(outputDir, { recursive: true, force: true }, (err) => {
             if (err) {
                 console.error(err);
             } else {
