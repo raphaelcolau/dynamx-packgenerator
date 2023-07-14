@@ -314,10 +314,9 @@ function generateDependencies(files, dependency, outputDir) {
     const dependencyFile = files[type].filter(file => file.file ? file.file.endsWith(dependencyFilename) : file.dir.endsWith(dependencyFilename))[0];
     if (dependencyFile) {
         const origin = dependencyFile.file ? dependencyFile.file : dependencyFile.dir;
-        const dir = origin.slice(0, origin.length - dependencyFilename.length);
+        const fileName = origin.split("/")[origin.split("/").length - 1];
+        const dir = origin.slice(0, origin.length - fileName.length);
         fs.mkdirSync(outputDir + dir, { recursive: true });
-        console.log("Dir: " + outputDir + dir);
-        console.log("Writing file: " + outputDir + origin);
         fs.writeFileSync(outputDir + origin, dependencyFile.content);
     } else {
         console.log(chalk.red("Dependency not found: ") + dependency);
@@ -346,4 +345,6 @@ function generatePack(files, pack) {
         fs.mkdirSync(outputDir + dir, { recursive: true });
         fs.writeFileSync(outputDir + origin, element.content);
     });
+
+    console.log(chalk.green("Pack generated: ") + pack.packId);
 }
