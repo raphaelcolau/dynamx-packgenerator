@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs';
+import { type } from 'os';
 
 function stepOutputIndicator(pack, command) {
     if (pack.step == 0) {
@@ -52,7 +53,6 @@ function stepOutputIndicator(pack, command) {
 
 function packCreator(files, input, pack) {
     const command = input.trim();
-    console.log({...pack, elements: pack.elements.length});
     
     if (pack.step === 0) {
         pack.packId = [...Array(6)].map(() => Math.random().toString(36).charAt(2)).join('');
@@ -245,6 +245,12 @@ export function stdinListener(files) {
             // Pack creator mode
             if (command === "/exit") {
                 inCreatorMode = false;
+                pack = {
+                    packId: "",
+                    elements: [],
+                    isProtected: undefined,
+                    step: 0
+                };
                 console.log("Exiting creator mode.");
             } else {
                 pack = packCreator(files, input, pack)
@@ -286,6 +292,7 @@ function clearOutputFolder() {
 
 function getType(file) {
     return (() => {
+        if (typeof file === "object") return "file";
         if (file.startsWith("vehicle_")) return       "vehicle";
         if (file.startsWith("trailer_")) return       "trailer";
         if (file.startsWith("armor_")) return         "armor";
@@ -306,18 +313,33 @@ function generateDependencies(files, dependency, outputDir) {
     const dependencyFilename = (() => {
         if (type !== "obj") {
             return dependency + ".dynx";
+        } else if (type === "file") {
+            return dependency.file.split("/")[dependency.file.split("/").length - 1];
         } else {
             return dependency;
         }
     })()
 
-    const dependencyFile = files[type].filter(file => file.file ? file.file.endsWith(dependencyFilename) : file.dir.endsWith(dependencyFilename))[0];
+    let dependencyFile;
+    if (type === "file") {
+        dependencyFile = dependency;
+    } else {
+        dependencyFile = files[type].filter(file => file.file ? file.file.endsWith(dependencyFilename) : file.dir.endsWith(dependencyFilename))[0];
+    }
+
     if (dependencyFile) {
         const origin = dependencyFile.file ? dependencyFile.file : dependencyFile.dir;
         const fileName = origin.split("/")[origin.split("/").length - 1];
         const dir = origin.slice(0, origin.length - fileName.length);
         fs.mkdirSync(outputDir + dir, { recursive: true });
         fs.writeFileSync(outputDir + origin, dependencyFile.content);
+        console.log(chalk.green("Created: ") + outputDir + origin);
+
+        if (dependencyFile.dependencies && dependencyFile.dependencies.length > 0) {
+            dependencyFile.dependencies.forEach(dependency => {
+                generateDependencies(files, dependency, outputDir);
+            });
+        }
     } else {
         console.log(chalk.red("Dependency not found: ") + dependency);
     }
