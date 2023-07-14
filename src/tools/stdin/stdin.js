@@ -274,8 +274,13 @@ export function stdinListener(files) {
 function clearOutputFolder() {
     const outputDir = "./builds/";
     if (fs.existsSync(outputDir)) {
-        fs.rm(outputDir, { recursive: true, force: true });
-        fs.mkdirSync(outputDir, { recursive: true });
+        fs.rmdir(outputDir, { recursive: true }, (err) => {
+            if (err) {
+                console.error(err);
+            } else {
+                fs.mkdirSync(outputDir, { recursive: true });
+            }
+        });
     }
 }
 
@@ -290,6 +295,7 @@ function generatePack(files, pack) {
         const origin = element.file ? element.file : element.dir;
         const fileName = origin.split("/")[origin.split("/").length - 1];
         const dir = origin.slice(0, origin.length - fileName.length);
+        console.log(element);
         console.log(fileName);
         console.log(dir);
 
