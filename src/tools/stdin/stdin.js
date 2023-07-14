@@ -284,20 +284,43 @@ function clearOutputFolder() {
     }
 }
 
+function generateDependencies(files, dependencies, outputDir) {
+    const type = (() => {
+        if (dependencies.startsWith("vehicle_")) return vehicle;
+        if (dependencies.startsWith("trailer_")) return trailer;
+        if (dependencies.startsWith("armor_")) return armor;
+        if (dependencies.startsWith("wheel_")) return wheel;
+        if (dependencies.startsWith("engine_")) return engine;
+        if (dependencies.startsWith("sounds_")) return sounds;
+        if (dependencies.startsWith("block_")) return block;
+        if (dependencies.startsWith("block_prop_")) return block_prop;
+        if (dependencies.startsWith("boat_")) return boat;
+        if (dependencies.startsWith("plane_")) return plane;
+        if (dependencies.startsWith("obj/")) return obj;
+    })()
+
+    const dependenciesFile = files[type].filter(file => file.file ? file.file.startsWith(dependencies) : file.dir.startsWith(dependencies));
+    if (dependenciesFile) {
+        console.log(dependenciesFile);
+    }
+}
+
 function generatePack(files, pack) {
     const ouputDir = "./builds/" + pack.packId + "/";
     if (!fs.existsSync(ouputDir)) {
         fs.mkdirSync(ouputDir, { recursive: true });
     }
 
-    console.log(pack.elements);
     pack.elements.forEach(element => {
         const origin = element.file ? element.file : element.dir;
         const fileName = origin.split("/")[origin.split("/").length - 1];
         const dir = origin.slice(0, origin.length - fileName.length);
-        console.log(element);
         console.log(fileName);
         console.log(dir);
+
+        if (element.dependencies > 0) {
+            generateDependencies(files, element.dependencies, ouputDir);
+        }
 
         fs.mkdirSync(ouputDir + dir, { recursive: true });
         fs.writeFileSync(ouputDir + origin, element.content);
