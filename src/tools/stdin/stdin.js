@@ -301,18 +301,33 @@ function getType(file) {
     })()
 }
 
+function generateDependencies(files, dependency, outputDir) {
+    const type = getType(dependency);
+    const dependencyFilename = (() => {
+        if (type !== "obj") {
+            return dependency + ".dynx";
+        } else {
+            return dependency;
+        }
     })()
 
-    const dependenciesFile = files[type].filter(file => file.file ? file.file.startsWith(dependencies) : file.dir.startsWith(dependencies));
-    if (dependenciesFile) {
-        console.log(dependenciesFile);
+    const dependencyFile = files[type].filter(file => file.file ? file.file.endsWith(dependencyFilename) : file.dir.endsWith(dependencyFilename))[0];
+    if (dependencyFile) {
+        const origin = dependencyFile.file ? dependencyFile.file : dependencyFile.dir;
+        const dir = origin.slice(0, origin.length - dependencyFilename.length);
+        fs.mkdirSync(outputDir + dir, { recursive: true });
+        console.log("Dir: " + outputDir + dir);
+        console.log("Writing file: " + outputDir + origin);
+        fs.writeFileSync(outputDir + origin, dependencyFile.content);
+    } else {
+        console.log(chalk.red("Dependency not found: ") + dependency);
     }
 }
 
 function generatePack(files, pack) {
-    const ouputDir = "./builds/" + pack.packId + "/";
-    if (!fs.existsSync(ouputDir)) {
-        fs.mkdirSync(ouputDir, { recursive: true });
+    const outputDir = "./builds/" + pack.packId + "/";
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
     }
 
     pack.elements.forEach(element => {
@@ -322,11 +337,13 @@ function generatePack(files, pack) {
         console.log(fileName);
         console.log(dir);
 
-        if (element.dependencies > 0) {
-            generateDependencies(files, element.dependencies, ouputDir);
+        if (element.dependencies.length > 0) {
+            element.dependencies.forEach(dependency => {
+                generateDependencies(files, dependency, outputDir);
+            });
         }
 
-        fs.mkdirSync(ouputDir + dir, { recursive: true });
-        fs.writeFileSync(ouputDir + origin, element.content);
+        fs.mkdirSync(outputDir + dir, { recursive: true });
+        fs.writeFileSync(outputDir + origin, element.content);
     });
 }
