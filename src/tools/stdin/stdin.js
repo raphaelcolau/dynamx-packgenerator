@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { clearOutputFolder } from '../folder/clearOutputFolder.js';
 import { packCreator } from '../packcreator/packcreator.js';
 import { help } from './command/help.js';
+import { packCommand } from './command/pack.js';
 
 export function stdinListener(files) {
     let inCreatorMode = false;
@@ -19,9 +20,7 @@ export function stdinListener(files) {
             if (command === "/help") {
                 help();
             } else if (command === "/pack") {
-                console.log("/pack create <name> - Create a new pack");
-                console.log("/pack list - List all packs");
-                console.log("/pack list <name> - List all files in a pack");
+                packCommand();
             } else if (command === "/list") {
                 console.log("/list <type> - List all files of a type");
                 console.log("\ttype: vehicle, trailer, armor, wheel, engine, sounds, block, block_prop, boat, plane, obj, unknown");
