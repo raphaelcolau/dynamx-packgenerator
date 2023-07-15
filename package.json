@@ -1,12 +1,13 @@
 {
-  "name": "dynamx-tools",
+  "name": "dynamx-package-manager",
   "version": "1.0.0",
   "description": "Tools for parsing, updating and selling dynamx package",
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ncc build -o dist/lib ./src/index.js && pkg --target node18-win-x64 -o dist/PackManager.exe ./dist/lib/index.js"
+    "build": "pkg .",
+    "winbuild": "node ./win-build/win-build.js"
   },
   "pkg": {
     "assets": [
@@ -21,7 +22,8 @@
       "node18-linux-x64",
       "node18-macos-x64"
     ],
-    "outputPath": "dist"
+    "outputPath": "dist",
+    "outputName": "PackManager"
   },
   "bin": {
     "DynamX-PackManager": "src/index.js"
@@ -34,6 +36,7 @@
     "glob": "^10.3.1"
   },
   "devDependencies": {
+    "@angablue/exe": "^1.2.0",
     "@babel/plugin-syntax-top-level-await": "^7.14.5"
   }
 }
