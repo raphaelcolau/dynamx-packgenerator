@@ -1,6 +1,6 @@
-import fs from 'fs';
-import {  glob } from 'glob';
-import chalk from 'chalk';
+const fs = require('fs');
+const {glob} = require('glob');
+const chalk = require("chalk");
 
 
 async function catchFiles() {
@@ -194,7 +194,7 @@ function parseSoundDependendies(file) {
     return dependencies;
 }
 
-export async function detector() {
+exports.detector = async function detector() {
     let dynamxFiles = {
         vehicle: [],
         trailer: [],
@@ -275,7 +275,7 @@ export async function detector() {
     return dynamxFiles;
 }
 
-export function parsedFilesNumber(parsedFiles) {
+function parsedFilesNumber(parsedFiles) {
     let total = 0;
     for (const key in parsedFiles) {
         if (key == "total") continue;
@@ -300,5 +300,7 @@ export function parsedFilesNumber(parsedFiles) {
 
     return total;
 }
+
+exports.parsedFilesNumber = parsedFilesNumber;
 
 //TODO: Add sounds for klaxon, horn, siren etc.

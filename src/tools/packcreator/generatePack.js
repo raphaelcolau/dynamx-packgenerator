@@ -1,12 +1,12 @@
-import fs from 'fs';
-import archiver from 'archiver';
-import chalk from 'chalk';
-import { generateDependencies } from './generateDependencies.js';
-import { getSubdirectoryNames } from '../folder/getSubdirectoryNames.js';
-import { generateLangFile } from './generateLangFile.js';
-import { generatePackInfo } from './generatePackInfo.js';
+const fs = require('fs');
+const archiver = require('archiver');
+const chalk = require("chalk");
+const { generateDependencies } = require('./generateDependencies.js');
+const { getSubdirectoryNames } = require('../folder/getSubdirectoryNames.js');
+const { generateLangFile } = require('./generateLangFile.js');
+const { generatePackInfo } = require('./generatePackInfo.js');
 
-export function generatePack(files, pack) {
+exports.generatePack = function generatePack(files, pack) {
     const outputDir = "./builds/" + pack.packId + "/";
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });

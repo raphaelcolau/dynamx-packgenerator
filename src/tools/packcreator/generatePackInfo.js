@@ -1,7 +1,7 @@
-import fs from 'fs';
-import chalk from 'chalk';
+const fs = require('fs');
+const chalk = require("chalk");
 
-export function generatePackInfo(files, outputDir, packFolderName) {
+exports.generatePackInfo = function generatePackInfo(files, outputDir, packFolderName) {
     const packInfo = files.unknown.filter(file => file.file ? file.file.endsWith("pack_info.dynx") : file.dir.endsWith("pack_info.dynx"))[0];
 
     if (!packInfo) {

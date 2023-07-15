@@ -1,6 +1,6 @@
 
 // return the type of dynamx file
-export function getType(file) {
+exports.getType = function getType(file) {
     return (() => {
         if (typeof file === "object") return "file";
         if (file.startsWith("vehicle_")) return       "vehicle";

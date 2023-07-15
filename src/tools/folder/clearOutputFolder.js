@@ -1,7 +1,7 @@
-import fs from 'fs';
-import chalk from 'chalk';
+const fs = require('fs');
+const chalk = require("chalk");
 
-export function clearOutputFolder() {
+exports.clearOutputFolder = function clearOutputFolder() {
     const outputDir = "./builds/";
     if (fs.existsSync(outputDir)) {
         fs.rm(outputDir, { recursive: true, force: true }, (err) => {

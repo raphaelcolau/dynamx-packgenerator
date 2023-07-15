@@ -1,6 +1,6 @@
-import chalk from "chalk";
+const chalk = require("chalk");
 
-export function stepOutputIndicator(pack, command) {
+exports.stepOutputIndicator = function stepOutputIndicator(pack, command) {
     if (pack.step == 0) {
         console.log(chalk.green("Creator mode activated.") + " Type /exit to exit creator mode.");
         console.log("Your pack id is: " + chalk.yellow(pack.packId));

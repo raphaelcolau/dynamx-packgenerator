@@ -1,11 +1,11 @@
-import chalk from "chalk";
+const chalk = require("chalk");
 
-export function listCommand() {
+exports.listCommand = function listCommand() {
     console.log(chalk.blue("/list <type>") + " - List all files of a type");
     console.log(chalk.yellow("vehicle, trailer, armor, wheel, engine, sounds, block, block_prop, boat, plane, obj, unknown"));
 }
 
-export function list(files, type) {
+exports.list = function list(files, type) {
     if (!files[type]) {
         console.log("Invalid type: " + type);
         console.log("Valid types: vehicle, trailer, armor, wheel, engine, sounds, block, block_prop, boat, plane, obj, unknown");

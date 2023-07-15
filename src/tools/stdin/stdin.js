@@ -1,11 +1,11 @@
-import chalk from 'chalk';
-import { clearOutputFolder } from '../folder/clearOutputFolder.js';
-import { packCreator } from '../packcreator/packcreator.js';
-import { help } from './command/help.js';
-import { packCommand } from './command/pack.js';
-import { listCommand, list } from './command/list.js';
+const chalk = require("chalk");
+const { clearOutputFolder } = require('../folder/clearOutputFolder.js');
+const { packCreator } = require('../packcreator/packcreator.js');
+const { help } = require('./command/help.js');
+const { packCommand } = require('./command/pack.js');
+const { listCommand, list } = require('./command/list.js');
 
-export function stdinListener(files) {
+exports.stdinListener = function stdinListener(files) {
     let inCreatorMode = false;
     let pack = {
         packId: "",

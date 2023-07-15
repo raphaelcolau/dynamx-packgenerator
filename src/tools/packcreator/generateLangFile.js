@@ -1,7 +1,7 @@
-import fs from 'fs';
-import chalk from 'chalk';
+const fs = require('fs');
+const chalk = require("chalk");
 
-export function generateLangFile(files, pack, packName, outputDir) {
+exports.generateLangFile = function generateLangFile(files, pack, packName, outputDir) {
     let langFileContent = [];
     
     if (!packName) {

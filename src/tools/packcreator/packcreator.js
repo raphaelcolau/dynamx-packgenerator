@@ -1,8 +1,8 @@
-import chalk from "chalk";
-import { generatePack } from "./generatePack.js";
-import { stepOutputIndicator } from "./stepOutputIndicator.js";
+const chalk = require("chalk");
+const { generatePack } = require('./generatePack.js');
+const { stepOutputIndicator } = require('./stepOutputIndicator.js');
 
-export function packCreator(files, input, pack) {
+exports.packCreator = function packCreator(files, input, pack) {
     const command = input.trim();
     
     if (pack.step === 0) {

@@ -1,5 +1,5 @@
-import chalk from "chalk";
+const chalk = require("chalk");
 
-export function packCommand() {
+exports.packCommand = function packCommand() {
     console.log(chalk.blue("/pack create") + " - Create a new pack");
 }

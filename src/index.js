@@ -1,5 +1,5 @@
-import { detector } from "./tools/detector/detector.js";
-import { stdinListener } from "./tools/stdin/stdin.js";
+const detector = require("./tools/detector/detector.js").detector;
+const stdinListener = require("./tools/stdin/stdin.js").stdinListener;
 
 async function main() {
     // Detect all Packs

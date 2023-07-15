@@ -1,6 +1,6 @@
-import chalk from "chalk";
+const chalk = require("chalk");
 
-export function help() {
+exports.help = function help() {
     console.log(chalk.blue('/help') + ' - Show this help');
     console.log(chalk.blue('/pack') + ' - help for pack command');
     console.log(chalk.blue('/clear') + ' - clear build folder');

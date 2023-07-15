@@ -1,8 +1,8 @@
-import fs from 'fs';
-import chalk from 'chalk';
-import { getType } from '../parser/getType.js';
+const fs = require('fs');
+const chalk = require("chalk");
+const { getType } = require('../parser/getType.js');
 
-export function generateDependencies(files, dependency, outputDir) {
+exports.generateDependencies = function generateDependencies(files, dependency, outputDir) {
     const type = getType(dependency);
     const dependencyFilename = (() => {
         if (type !== "obj") {
