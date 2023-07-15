@@ -355,6 +355,34 @@ function getSubdirectoryNames(directoryPath) {
     return subdirectoryNames;
 }
 
+function generateLangFile(files, pack, packName, outputDir) {
+    let langFileContent = [];
+    
+    if (!packName) {
+        console.log(chalk.red("/!\ Can't generate lang file: ") + "No pack name provided.");
+        return;
+    }
+
+    pack.elements.forEach(element => {
+        const lines = element.content.split("\n");
+        const elementName = element.file ? element.file.split("/")[element.file.split("/").length - 1] : element.dir.split("/")[element.dir.split("/").length - 1];
+        lines.forEach(line => {
+            if (line.startsWith("Name:")) {
+                const displayName = line.replace("Name:", "").replace("\n", "").replace("\r", "").trim();
+                const itemName = "item.dynamxmod." + packName.toLowerCase() + "." + elementName.toLowerCase().replace(".dynx", "") + ".name=";
+                langFileContent.push(itemName + displayName);
+            }
+        });
+    });
+
+    langFileContent = langFileContent.join("\n");
+    const langFileDir = "./builds/" + pack.packId + "/" + packName + "/" + "/assets/dynamxmod/lang/";
+    const langFilePath = langFileDir + "en_US.lang";
+    fs.mkdirSync(langFileDir, { recursive: true });
+    fs.writeFileSync(langFilePath, langFileContent);
+    console.log(chalk.green("Created: ") + langFilePath);
+}
+
 function generatePack(files, pack) {
     const outputDir = "./builds/" + pack.packId + "/";
     if (!fs.existsSync(outputDir)) {
@@ -380,6 +408,7 @@ function generatePack(files, pack) {
 
     //Zip the DartcherPack folder recursively inside the outputDir
     const packFolderName = getSubdirectoryNames(outputDir)[0];
+    generateLangFile(files, pack, packFolderName, outputDir);
     console.log("Pack folder name: " + packFolderName);
 
     const output = fs.createWriteStream(outputDir + packFolderName +"-"+ pack.packId + ".dnxpack");
