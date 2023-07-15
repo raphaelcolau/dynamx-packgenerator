@@ -57,8 +57,9 @@ export function stdinListener(files) {
             }
         }
     };
-      
-    console.log("/help to start\n");
+    
+    console.log("\n\n");
+    console.log(chalk.green('/help') + " to start\n");
     
     process.stdin.setEncoding("utf8");
     process.stdin.on("data", async (data) => {
