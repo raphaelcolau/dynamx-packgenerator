@@ -213,6 +213,10 @@ exports.detector = async function detector() {
     }
 
     const catchAllFiles = await catchFiles().then(files => {
+        if (files.length == 0) {
+            console.log("No files found.");
+            return;
+        }
         //Put all files in their respective arrays
         files.forEach(file => {
             dynamxFiles[configType(file).type].push(configType(file));
