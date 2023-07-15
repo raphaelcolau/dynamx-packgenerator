@@ -1,6 +1,6 @@
 import chalk from "chalk";
-import { generatePack } from "./generatePack";
-import { stepOutputIndicator } from "./stepOutputIndicator";
+import { generatePack } from "./generatePack.js";
+import { stepOutputIndicator } from "./stepOutputIndicator.js";
 
 export function packCreator(files, input, pack) {
     const command = input.trim();
