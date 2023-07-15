@@ -26,7 +26,6 @@ export function stdinListener(files) {
                 listCommand();
             } else if (command === "/clear") {
                 clearOutputFolder();
-                console.log("Build folder cleared.");
             } else if (command.startsWith("/list ")) {
                 const type = command.split(" ")[1];
                 list(files, type);

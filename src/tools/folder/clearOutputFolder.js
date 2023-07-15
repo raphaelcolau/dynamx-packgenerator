@@ -1,4 +1,5 @@
 import fs from 'fs';
+import chalk from 'chalk';
 
 export function clearOutputFolder() {
     const outputDir = "./builds/";
@@ -8,6 +9,7 @@ export function clearOutputFolder() {
                 console.error(err);
             } else {
                 fs.mkdirSync(outputDir, { recursive: true });
+                console.log(chalk.green("Build folder cleared."));
             }
         });
     }
