@@ -425,7 +425,7 @@ function generatePack(files, pack) {
     archive.directory(outputDir + packFolderName, false);
     archive.finalize();
     output.on("close", () => {
-        console.log(chalk.green("Pack created: ") + outputDir + packFolderName +"-"+ pack.packId + ".zip");
+        console.log(chalk.green("Pack created: ") + outputDir + packFolderName +"-"+ pack.packId + ".dnxpack");
     });
     output.on("end", () => {
         console.log("Data has been drained");
