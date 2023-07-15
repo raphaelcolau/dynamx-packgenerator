@@ -16,8 +16,6 @@ exports.generatePack = function generatePack(files, pack) {
         const origin = element.file ? element.file : element.dir;
         const fileName = origin.split("/")[origin.split("/").length - 1];
         const dir = origin.slice(0, origin.length - fileName.length);
-        console.log(fileName);
-        console.log(dir);
 
         if (element.dependencies.length > 0) {
             element.dependencies.forEach(dependency => {
