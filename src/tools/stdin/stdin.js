@@ -156,13 +156,13 @@ function packCreator(files, input, pack) {
     } else if (pack.step >= 2 && pack.step < 3) {
         let type = Math.floor((pack.step % 2) * 10);
         const toAdd = command.split(/[\s,]+/);
-        if (type == 1) { toAdd.forEach((e) => { pack.elements.push(files.vehicle[e]); }); }
-        if (type == 2) { toAdd.forEach((e) => { pack.elements.push(files.trailer[e]); }); }
-        if (type == 3) { toAdd.forEach((e) => { pack.elements.push(files.armor[e]); }); }
-        if (type == 4) { toAdd.forEach((e) => { pack.elements.push(files.block[e]); }); }
-        if (type == 5) { toAdd.forEach((e) => { pack.elements.push(files.block_prop[e]); }); }
-        if (type == 6) { toAdd.forEach((e) => { pack.elements.push(files.boat[e]); }); }
-        if (type == 7) { toAdd.forEach((e) => { pack.elements.push(files.plane[e]); }); }
+        if (type == 1) { toAdd.forEach((e) => { pack.elements.indexOf(files.vehicle[e]) === -1 ? pack.elements.push(files.vehicle[e]) : null }); }
+        if (type == 2) { toAdd.forEach((e) => { pack.elements.indexOf(files.trailer[e]) === -1 ? pack.elements.push(files.trailer[e]) : null }); }
+        if (type == 3) { toAdd.forEach((e) => { pack.elements.indexOf(files.armor[e]) === -1 ? pack.elements.push(files.armor[e]) : null}); }
+        if (type == 4) { toAdd.forEach((e) => { pack.elements.indexOf(files.block[e]) === -1 ? pack.elements.push(files.block[e]) : null  }); }
+        if (type == 5) { toAdd.forEach((e) => { pack.elements.indexOf(files.block_prop[e]) === -1 ? pack.elements.push(files.block_prop[e]) : null }); }
+        if (type == 6) { toAdd.forEach((e) => { pack.elements.indexOf(files.boat[e]) === -1 ? pack.elements.push(files.boat[e]) : null }); }
+        if (type == 7) { toAdd.forEach((e) => { pack.elements.indexOf(files.plane[e]) === -1 ? pack.elements.push(files.plane[e]) : null }); }
         pack.step = 2;
         stepOutputIndicator(pack);
     }
