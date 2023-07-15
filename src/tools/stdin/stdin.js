@@ -391,6 +391,19 @@ function generateLangFile(files, pack, packName, outputDir) {
     console.log(chalk.green("Created: ") + langFilePath);
 }
 
+function generatePackInfo(files, outputDir, packFolderName) {
+    const packInfo = files.unknown.filter(file => file.file ? file.file.endsWith("pack_info.dynx") : file.dir.endsWith("pack_info.dynx"))[0];
+
+    if (!packInfo) {
+        console.log(chalk.yellow("No pack info file found. ") + "Generating default pack info file.");
+        packInfo.content = `PackName: ${packFolderName}\nCompatibleWithLoaderVersions: [1.0,1.1)\nPackVersion: 5.0.0\nDcFileVersion: 12.5.0`
+        packInfo.dir = packFolderName + "/pack_info.dynx";
+    }
+
+    fs.writeFileSync(outputDir + "/" + packInfo.dir , packInfo.content);
+    console.log(chalk.green("Created: ") + outputDir + "/" + packInfo.dir);
+}
+
 function generatePack(files, pack) {
     const outputDir = "./builds/" + pack.packId + "/";
     if (!fs.existsSync(outputDir)) {
@@ -414,11 +427,13 @@ function generatePack(files, pack) {
         fs.writeFileSync(outputDir + origin, element.content);
     });
 
-    //Zip the DartcherPack folder recursively inside the outputDir
     const packFolderName = getSubdirectoryNames(outputDir)[0];
-    generateLangFile(files, pack, packFolderName, outputDir);
     console.log("Pack folder name: " + packFolderName);
+    
+    generatePackInfo(files, outputDir, packFolderName);
+    generateLangFile(files, pack, packFolderName, outputDir);
 
+    //Zip the DartcherPack folder recursively inside the outputDir
     const output = fs.createWriteStream(outputDir + packFolderName +"-"+ pack.packId + ".dnxpack");
     const archive = archiver("zip", {zlib: { level: 1 }}); // Sets the compression level. 1 = best speed, 9 = best compression
     archive.pipe(output);
