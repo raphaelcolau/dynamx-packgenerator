@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import archiver from 'archiver';
 import path from 'path';
+import { clearOutputFolder } from '../folder/clearOutputFolder.js';
 
 function stepOutputIndicator(pack, command) {
     if (pack.step == 0) {
@@ -277,19 +278,6 @@ export function stdinListener(files) {
     });
     
     process.stdout.write("> ");
-}
-
-function clearOutputFolder() {
-    const outputDir = "./builds/";
-    if (fs.existsSync(outputDir)) {
-        fs.rm(outputDir, { recursive: true, force: true }, (err) => {
-            if (err) {
-                console.error(err);
-            } else {
-                fs.mkdirSync(outputDir, { recursive: true });
-            }
-        });
-    }
 }
 
 function getType(file) {
