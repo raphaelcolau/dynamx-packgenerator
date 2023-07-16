@@ -2,9 +2,9 @@ const chalk = require("chalk");
 const { generatePack } = require('./generatePack.js');
 const { stepOutputIndicator } = require('./stepOutputIndicator.js');
 
-exports.packCreator = function packCreator(files, input, pack) {
+exports.packCreator = function packCreator(files, input, pack, directory) {
     const command = input.trim();
-    
+    console.log("Directory: " + directory);
     if (pack.step === 0) {
         pack.packId = [...Array(6)].map(() => Math.random().toString(36).charAt(2)).join('');
         stepOutputIndicator(pack);
@@ -130,7 +130,7 @@ exports.packCreator = function packCreator(files, input, pack) {
         } else {
             console.log("Do you want to protect your pack ?" + chalk.yellow(" (Yes/No)"));
         }
-        generatePack(files, pack);
+        generatePack(files, pack, directory);
     }
 
     return pack;

@@ -5,9 +5,11 @@ const { generateDependencies } = require('./generateDependencies.js');
 const { getSubdirectoryNames } = require('../folder/getSubdirectoryNames.js');
 const { generateLangFile } = require('./generateLangFile.js');
 const { generatePackInfo } = require('./generatePackInfo.js');
+const path = require('path');
 
-exports.generatePack = function generatePack(files, pack) {
-    const outputDir = "./builds/" + pack.packId + "/";
+exports.generatePack = function generatePack(files, pack, directory) {
+    const outputDir = path.join(directory, "builds" , pack.packId, "/" );
+    console.log(chalk.green("Pack output directory: ") + outputDir);
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
     }

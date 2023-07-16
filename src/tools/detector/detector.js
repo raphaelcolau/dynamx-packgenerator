@@ -1,27 +1,31 @@
 const fs = require('fs');
 const {glob} = require('glob');
 const chalk = require("chalk");
+const path = require('path');
 
 
-async function catchFiles() {
+async function catchFiles(directory) {
     //This function will detect all the *.dynx files in Packs folder recursively.
     //It will return an array of all the *.dynx files.
     //If the Packs folder does not exist, it will create one.
 
     //Check if Packs folder exists
+    const dir = path.join(directory, '/Packs/');
     try {
-        if (!fs.existsSync('./Packs')) {
-            fs.mkdirSync('./Packs');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
             console.log('Packs folder created. Put your packs in there.');
         } else {
-            return glob('**/*.dynx', { cwd: './Packs' })
+            return glob('**/*.dynx', { cwd: dir })
         }
     } catch (err) {
         console.error(err);
     }
 }
 
-function configType(file) {
+function configType(file, directory) {
+    const dir = path.join(directory, '/Packs/');
+
     return {
         type: (() => {
             if (file.includes('vehicle_')) return 'vehicle';
@@ -39,7 +43,7 @@ function configType(file) {
         })(),
         name: file.substring(file.lastIndexOf('\\') + 1, file.lastIndexOf('.dynx')),
         dir: file.replaceAll("\\", "/"),
-        content: fs.readFileSync("./Packs/" + file, 'utf8'),
+        content: fs.readFileSync(dir + file, 'utf8'),
         dependencies: [],
     }
 }
@@ -68,35 +72,28 @@ function parseDependendies(file) {
     return dependencies;
 }
 
-async function getAllObj() {
+async function getAllObj(directory) {
+    const dir = path.join(directory, '/Packs/');
     let obj = [];
-    let files = await glob('**/*.obj', { cwd: './Packs' });
+    let files = await glob('**/*.obj', { cwd: dir });
+
     const promises = files.map(async file => {
-      const dependencies = await getObjDependencies(file);
+      const dependencies = await getObjDependencies(file, directory);
       return {
         file: file.replaceAll('\\', '/'),
         dependencies: dependencies,
-        content: fs.readFileSync("./Packs/" + file, 'utf8')
+        content: fs.readFileSync(dir + file, 'utf8')
       };
     });
     obj = await Promise.all(promises);
   
-    //Display all the obj files and their dependencies
-    /*
-    obj.forEach(obj => {
-      console.log("File: " + obj.file);
-      obj.dependencies.forEach(dependency => {
-        if (dependency) console.log("\t" + dependency.file);
-      });
-    });
-    */
-  
     return obj;
 }
 
-async function getObjDependencies(obj) {
+async function getObjDependencies(obj, directory) {
     let dependencies = [];
-    const  lines = fs.readFileSync("./Packs/" + obj, 'utf8').split('\n');
+    const packDir = path.join(directory, '/Packs/');
+    const lines = fs.readFileSync(packDir + obj, 'utf8').split('\n');
     const dir = obj.substring(0, obj.lastIndexOf('\\')).replaceAll('\\', '/') + '/';
 
     for(const line of lines) {
@@ -107,7 +104,7 @@ async function getObjDependencies(obj) {
                 continue;
             } 
             try {
-                const mtlContent = fs.readFileSync("./Packs/" + dir + mtl, 'utf8')
+                const mtlContent = fs.readFileSync(packDir + dir + mtl, 'utf8')
                 dependencies.push({
                     file: dir + mtl,
                     content: mtlContent,
@@ -120,7 +117,7 @@ async function getObjDependencies(obj) {
                         const texture = mtlLine.split(' ')[1].replaceAll('\n', '').replace('map_Kd', '').replaceAll('\r', '')
                         try {
 
-                            const content = fs.readFileSync("./Packs/" + dir + texture, 'utf8')
+                            const content = fs.readFileSync(packDir + dir + texture, 'utf8')
                             dependencies.push({
                                 file: dir + texture,
                                 content: content,
@@ -140,18 +137,19 @@ async function getObjDependencies(obj) {
     };
     if (dependencies.length == 0) console.log("No dependencies found.");
 
-    const collisionFiles = await getCollisionFiles(dir);
+    const collisionFiles = await getCollisionFiles(dir, directory);
 
     return dependencies.concat(collisionFiles);
 }
 
-function getCollisionFiles(dir) {
-    const dc = glob('*.dc', { cwd: './Packs/' + dir });
+function getCollisionFiles(dir, directory) {
+    const packDir = path.join(directory, '/Packs/');
+    const dc = glob('*.dc', { cwd: packDir + dir });
   
     return dc.then(files => {
       const promises = files.map(file => {
         return new Promise((resolve, reject) => {
-          fs.readFile("./Packs/" + dir + file, 'utf8', (err, content) => {
+          fs.readFile(packDir + dir + file, 'utf8', (err, content) => {
             if (err) {
               reject(err);
               return;
@@ -170,7 +168,8 @@ function getCollisionFiles(dir) {
     });
 }
 
-function parseSoundDependendies(file) {
+function parseSoundDependendies(file, directory) {
+    const dir = path.join(directory, '/Packs/');
     const lines = file.content.split('\n');
     let dependencies = [];
     const pack = file.dir.split('/')[0];
@@ -182,7 +181,7 @@ function parseSoundDependendies(file) {
                 try {
                     dependencies.push({
                         file: pack + "/assets/dynamxmod/sounds/" + sound,
-                        content: fs.readFileSync("./Packs/" + pack + "/assets/dynamxmod/sounds/" + sound, 'utf8')
+                        content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound, 'utf8')
                     });
                 } catch (err) {
                     console.log("[ERROR] " + err.code + ": " + err.path);
@@ -194,7 +193,7 @@ function parseSoundDependendies(file) {
     return dependencies;
 }
 
-exports.detector = async function detector() {
+exports.detector = async function detector(directory) {
     let dynamxFiles = {
         vehicle: [],
         trailer: [],
@@ -207,19 +206,19 @@ exports.detector = async function detector() {
         boat: [],
         helicopter: [],
         plane: [],
-        obj: await getAllObj(),
+        obj: await getAllObj(directory),
         unknown: [],
         total: 0,
     }
 
-    const catchAllFiles = await catchFiles().then(files => {
+    const catchAllFiles = await catchFiles(directory).then(files => {
         if (files.length == 0) {
             console.log("No files found.");
             return;
         }
         //Put all files in their respective arrays
         files.forEach(file => {
-            dynamxFiles[configType(file).type].push(configType(file));
+            dynamxFiles[configType(file, directory).type].push(configType(file, directory));
         });
 
         //Parse all dependencies for vehicle files
@@ -269,7 +268,7 @@ exports.detector = async function detector() {
 
         //Parse all dependencies for sounds files
         dynamxFiles.sounds.forEach(sounds => {
-            sounds.dependencies = parseSoundDependendies(sounds);
+            sounds.dependencies = parseSoundDependendies(sounds, directory);
         });
 
     });
