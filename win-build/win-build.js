@@ -12,7 +12,7 @@ const build = exe({
         FileDescription: 'Pack Manager for DynamX',
         ProductName: 'DynamX Pack Manager',
         LegalCopyright: 'Raphael Colau https://raphael.colau.fr',
-        OriginalFilename: 'PackageManager.exe'
+        OriginalFilename: 'PackManager.exe'
     }
 });
 
