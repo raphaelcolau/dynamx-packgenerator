@@ -30,7 +30,7 @@ exports.stdinListener = async function stdinListener() {
                 directory = appDirectory();
                 files = await detector(directory);
                 console.log(chalk.green('/help') + " to start\n");
-            } else if (command === "L") {
+            } else if (command.toLowerCase() === "l") {
                 directory = "./";
                 files = await detector(directory);
                 console.log(chalk.green('/help') + " to start\n");
