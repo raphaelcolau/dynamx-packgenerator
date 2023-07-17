@@ -136,7 +136,7 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
         } else {
             console.log("Do you want to protect your pack ?" + chalk.yellow(" (Yes/No)"));
         }
-        generatePack(files, pack, directory);
+        generatePack(files, pack, directory, pack.isProtected);
     }
 
     return pack;
