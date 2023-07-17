@@ -127,16 +127,21 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
     else if (pack.step = 3) {
         if (command.toLowerCase() == "yes" || command.toLowerCase() == "y") {
             pack.isProtected = true;
-            pack.step = 3;
-            console.log("Your pack is now protected.");
+            pack.step = 4;
+            console.log(chalk.green("Type the host name") + " (ex: myserver.com)");
         } else if (command.toLowerCase() == "no" || command.toLowerCase() == "n") {
             pack.isProtected = false;
-            pack.step = 3;
-            console.log("Your pack is now unprotected.");
+            pack.step = 5;
+            console.log("Your pack will be generated without protection.");
+            generatePack(files, pack, directory, pack.isProtected);
         } else {
             console.log("Do you want to protect your pack ?" + chalk.yellow(" (Yes/No)"));
         }
-        generatePack(files, pack, directory, pack.isProtected);
+    } else if (pack.step = 4) {
+        pack.host = command;
+        pack.step = 5;
+        console.log("Host name set to " + chalk.yellow(pack.host));
+        generatePack(files, pack, directory, pack.isProtected, command);
     }
 
     return pack;
