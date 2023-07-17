@@ -4,7 +4,6 @@ const { stepOutputIndicator } = require('./stepOutputIndicator.js');
 
 exports.packCreator = function packCreator(files, input, pack, directory) {
     const command = input.trim();
-    console.log("Directory: " + directory);
     if (pack.step === 0) {
         pack.packId = [...Array(6)].map(() => Math.random().toString(36).charAt(2)).join('');
         stepOutputIndicator(pack);
@@ -124,7 +123,7 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
         stepOutputIndicator(pack);
     }
     /* Generate and protect the pack */
-    else if (pack.step = 3) {
+    else if (pack.step === 3) {
         if (command.toLowerCase() == "yes" || command.toLowerCase() == "y") {
             pack.isProtected = true;
             pack.step = 4;
@@ -137,7 +136,7 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
         } else {
             console.log("Do you want to protect your pack ?" + chalk.yellow(" (Yes/No)"));
         }
-    } else if (pack.step = 4) {
+    } else if (pack.step === 4) {
         pack.host = command;
         pack.step = 5;
         console.log("Host name set to " + chalk.yellow(pack.host));
