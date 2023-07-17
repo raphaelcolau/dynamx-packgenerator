@@ -44,7 +44,7 @@ exports.generatePack = function generatePack(files, pack, directory, isProtected
     archive.finalize();
     output.on("close", () => {
         if (isProtected) {
-            protectPack(outputDir + packFolderName +"-"+ pack.packId + ".dnxpack", "http://localhost:3000")
+            protectPack(path.join(outputDir, packFolderName +"-"+ pack.packId + ".dnxpack"), host)
         } else {
             console.log(chalk.green("Pack created: ") + outputDir + packFolderName +"-"+ pack.packId + ".dnxpack");
         }
