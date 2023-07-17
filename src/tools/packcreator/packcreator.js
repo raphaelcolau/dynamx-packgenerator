@@ -106,6 +106,12 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
     } else if (pack.step >= 2 && pack.step < 3) {
         let type = Math.round((pack.step - 2) * 10);
         const toAdd = command.split(/[\s,]+/);
+        //filter toAdd to keep only numbers
+        toAdd.forEach((e, i) => {
+            if (isNaN(e)) {
+                toAdd.splice(i, 1);
+            }
+        });
 
         if (type == 1) { toAdd.forEach((e) => { pack.elements.indexOf(files.vehicle[e]) === -1 ? pack.elements.push(files.vehicle[e]) : null }); }
         if (type == 2) { toAdd.forEach((e) => { pack.elements.indexOf(files.trailer[e]) === -1 ? pack.elements.push(files.trailer[e]) : null }); }
