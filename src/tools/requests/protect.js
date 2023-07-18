@@ -11,8 +11,6 @@ exports.protectPack = function protectPack(fileDirectory, host, game_dir, packId
     const fileName = path.basename(fileDirectory);
     const file = new Blob([fileBuffer], { type: "application/zip" });
 
-    console.log(file);
-
     const formData = new FormData();
     formData.append("pack_file", fileBuffer, fileName);
     formData.append("game_dir", game_dir);
