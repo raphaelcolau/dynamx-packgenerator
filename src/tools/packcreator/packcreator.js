@@ -4,7 +4,6 @@ const { stepOutputIndicator } = require('./stepOutputIndicator.js');
 
 exports.packCreator = function packCreator(files, input, pack, directory) {
     const command = input.trim();
-    console.log("Directory: " + directory);
     if (pack.step === 0) {
         pack.packId = [...Array(6)].map(() => Math.random().toString(36).charAt(2)).join('');
         stepOutputIndicator(pack);
@@ -106,6 +105,12 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
     } else if (pack.step >= 2 && pack.step < 3) {
         let type = Math.round((pack.step - 2) * 10);
         const toAdd = command.split(/[\s,]+/);
+        //filter toAdd to keep only numbers
+        toAdd.forEach((e, i) => {
+            if (isNaN(e)) {
+                toAdd.splice(i, 1);
+            }
+        });
 
         if (type == 1) { toAdd.forEach((e) => { pack.elements.indexOf(files.vehicle[e]) === -1 ? pack.elements.push(files.vehicle[e]) : null }); }
         if (type == 2) { toAdd.forEach((e) => { pack.elements.indexOf(files.trailer[e]) === -1 ? pack.elements.push(files.trailer[e]) : null }); }
@@ -118,19 +123,29 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
         stepOutputIndicator(pack);
     }
     /* Generate and protect the pack */
-    else if (pack.step = 3) {
+    else if (pack.step === 3) {
         if (command.toLowerCase() == "yes" || command.toLowerCase() == "y") {
             pack.isProtected = true;
-            pack.step = 3;
-            console.log("Your pack is now protected.");
+            pack.step = 4;
+            console.log(chalk.green("Type the host name") + " (ex: myserver.com)");
         } else if (command.toLowerCase() == "no" || command.toLowerCase() == "n") {
             pack.isProtected = false;
-            pack.step = 3;
-            console.log("Your pack is now unprotected.");
+            pack.step = 6;
+            console.log("Your pack will be generated without protection.");
+            generatePack(files, pack, directory, pack.isProtected);
         } else {
             console.log("Do you want to protect your pack ?" + chalk.yellow(" (Yes/No)"));
         }
-        generatePack(files, pack, directory);
+    } else if (pack.step === 4) {
+        pack.host = command;
+        pack.step = 5;
+        console.log("Host name set to " + chalk.yellow(pack.host));
+        console.log(chalk.green("Type the game root folder."))
+    } else if (pack.step === 5) {
+        pack.game_dir = command;
+        pack.step = 6;
+        console.log("Game root folder set to " + chalk.yellow(pack.game_dir));
+        generatePack(files, pack, directory, pack.isProtected);
     }
 
     return pack;

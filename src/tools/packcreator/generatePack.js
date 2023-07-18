@@ -6,8 +6,9 @@ const { getSubdirectoryNames } = require('../folder/getSubdirectoryNames.js');
 const { generateLangFile } = require('./generateLangFile.js');
 const { generatePackInfo } = require('./generatePackInfo.js');
 const path = require('path');
+const { protectPack } = require('../requests/protect.js');
 
-exports.generatePack = function generatePack(files, pack, directory) {
+exports.generatePack = function generatePack(files, pack, directory, isProtected) {
     const outputDir = path.join(directory, "builds" , pack.packId, "/" );
     console.log(chalk.green("Pack output directory: ") + outputDir);
     if (!fs.existsSync(outputDir)) {
@@ -42,7 +43,11 @@ exports.generatePack = function generatePack(files, pack, directory) {
     archive.directory(outputDir + packFolderName, false);
     archive.finalize();
     output.on("close", () => {
-        console.log(chalk.green("Pack created: ") + outputDir + packFolderName +"-"+ pack.packId + ".dnxpack");
+        if (isProtected) {
+            protectPack(path.join(outputDir, packFolderName +"-"+ pack.packId + ".dnxpack"), pack.host, pack.game_dir, pack.packId)
+        } else {
+            console.log(chalk.green("Pack created: ") + outputDir + packFolderName +"-"+ pack.packId + ".dnxpack");
+        }
     });
     output.on("end", () => {
         console.log("Data has been drained");
