@@ -124,13 +124,13 @@ async function getObjDependencies(obj, directory) {
                             });
 
                         } catch (err) {
-                            console.log("[ERROR] " + err.code + ":" + err.path);
+                            console.log(chalk.red("[ERROR] ") + chalk.yellow(err.code) + ":" + err.path);
                         }
                     }
                 });
 
             } catch (err) {
-                console.log("[ERROR] " + err.code + ": " + err.path);
+                console.log(chalk.red("[ERROR] ") + chalk.yellow(err.code) + ": " + err.path);
             }
 
         }
@@ -184,7 +184,7 @@ function parseSoundDependendies(file, directory) {
                         content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound, 'utf8')
                     });
                 } catch (err) {
-                    console.log("[ERROR] " + err.code + ": " + err.path);
+                    console.log(chalk.red("[ERROR] ") + chalk.yellow(err.code) + ": " + err.path);
                 }
             }
         }
