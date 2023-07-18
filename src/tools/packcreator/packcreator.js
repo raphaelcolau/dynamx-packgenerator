@@ -130,7 +130,7 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
             console.log(chalk.green("Type the host name") + " (ex: myserver.com)");
         } else if (command.toLowerCase() == "no" || command.toLowerCase() == "n") {
             pack.isProtected = false;
-            pack.step = 5;
+            pack.step = 6;
             console.log("Your pack will be generated without protection.");
             generatePack(files, pack, directory, pack.isProtected);
         } else {
@@ -140,7 +140,12 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
         pack.host = command;
         pack.step = 5;
         console.log("Host name set to " + chalk.yellow(pack.host));
-        generatePack(files, pack, directory, pack.isProtected, command);
+        console.log(chalk.green("Type the game root folder."))
+    } else if (pack.step === 5) {
+        pack.game_dir = command;
+        pack.step = 6;
+        console.log("Game root folder set to " + chalk.yellow(pack.game_dir));
+        generatePack(files, pack, directory, pack.isProtected);
     }
 
     return pack;
