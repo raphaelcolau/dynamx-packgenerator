@@ -118,7 +118,7 @@ async function getObjDependencies(obj, directory) {
                         const texture = mtlLine.split(' ')[1].replaceAll('\n', '').replace('map_Kd', '').replaceAll('\r', '')
                         try {
 
-                            const content = fs.readFileSync(packDir + dir + texture, 'utf8')
+                            const content = fs.readFileSync(packDir + dir + texture)
                             dependencies.push({
                                 file: dir + texture,
                                 content: content,
@@ -160,6 +160,7 @@ function getCollisionFiles(dir, directory) {
             const dependency = {
               file: dir + file,
               content: content,
+              type: 'text'
             };
             resolve(dependency);
           });
@@ -183,7 +184,7 @@ function parseSoundDependendies(file, directory) {
                 try {
                     dependencies.push({
                         file: pack + "/assets/dynamxmod/sounds/" + sound,
-                        content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound, 'utf8'),
+                        content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound),
                         type: 'audio'
                     });
                 } catch (err) {
