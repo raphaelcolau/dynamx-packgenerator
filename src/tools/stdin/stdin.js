@@ -21,9 +21,7 @@ exports.stdinListener = async function stdinListener() {
 
 
     const processInput = async (input) => {
-        const command = input.trim(); // Supprimer les espaces inutiles en début et fin de commande
-        
-        
+        const command = input.trim().toLowerCase();
 
         if (!files) {
             if (command === "") {
