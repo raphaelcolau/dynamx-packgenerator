@@ -1,6 +1,8 @@
 const fs = require('fs');
 const chalk = require("chalk");
 
+
+//TODO: Generate armor files names
 exports.generateLangFile = function generateLangFile(files, pack, packName, outputDir) {
     let langFileContent = [];
     
