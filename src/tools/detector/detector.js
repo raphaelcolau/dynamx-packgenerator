@@ -108,6 +108,7 @@ async function getObjDependencies(obj, directory) {
                 dependencies.push({
                     file: dir + mtl,
                     content: mtlContent,
+                    type: 'text'
                 });
 
                 //Detect textures
@@ -121,6 +122,7 @@ async function getObjDependencies(obj, directory) {
                             dependencies.push({
                                 file: dir + texture,
                                 content: content,
+                                type: 'image'
                             });
 
                         } catch (err) {
@@ -181,7 +183,8 @@ function parseSoundDependendies(file, directory) {
                 try {
                     dependencies.push({
                         file: pack + "/assets/dynamxmod/sounds/" + sound,
-                        content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound, 'utf8')
+                        content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound, 'utf8'),
+                        type: 'audio'
                     });
                 } catch (err) {
                     console.log(chalk.red("[ERROR] ") + chalk.yellow(err.code) + ": " + err.path);
