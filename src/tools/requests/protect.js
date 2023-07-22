@@ -16,8 +16,6 @@ exports.protectPack = function protectPack(fileDirectory, host, game_dir, packId
     formData.append("game_dir", game_dir);
     formData.append("rep_id", packId);
 
-    console.log("Host: " + chalk.magenta(`https://${apiAddress}/mprotector/packs/zip`));
-
     axios.post(`https://${apiAddress}/mprotector/packs/zip`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
