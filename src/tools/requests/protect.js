@@ -25,8 +25,9 @@ exports.protectPack = function protectPack(fileDirectory, host, game_dir, packId
             console.log(chalk.green("Pack created: ") + response.data.dl_link);
         }
     }).catch((error) => {
-        if (error.response.data) {
+        if (error.response) {
             console.log(chalk.red("Error: ") + error.response.data);
+            console.log(error.response)
         } else {
             console.log(error);
         }
