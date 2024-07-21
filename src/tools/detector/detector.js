@@ -179,7 +179,7 @@ function parseSoundDependendies(file, directory) {
 
     lines.forEach(line => {
         if (line.includes('Sound:')) {
-            const sound = line.trim().split(' ')[1].replaceAll('\n', '').replaceAll('\r', '') + ".ogg";
+            const sound = line.trim().split(' ')[1]?.replaceAll('\n', '').replaceAll('\r', '') + ".ogg";
             if (!dependencies.includes(sound)) {
                 try {
                     dependencies.push({
