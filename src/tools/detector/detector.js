@@ -175,20 +175,30 @@ function parseSoundDependendies(file, directory) {
     const dir = path.join(directory, '/Packs/');
     const lines = file.content.split('\n');
     let dependencies = [];
-    const pack = file.dir.split('/')[0];
+    
+    // Extraire le nom du pack depuis le chemin du fichier
+    const pathParts = file.dir.split('/');
+    const pack = pathParts.length > 0 ? pathParts[0] : '';
 
     lines.forEach(line => {
         if (line.includes('Sound:')) {
-            const sound = line.trim().split(' ')[1].replaceAll('\n', '').replaceAll('\r', '') + ".ogg";
-            if (!dependencies.includes(sound)) {
-                try {
-                    dependencies.push({
-                        file: pack + "/assets/dynamxmod/sounds/" + sound,
-                        content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound),
-                        type: 'audio'
-                    });
-                } catch (err) {
-                    console.log(chalk.red("[ERROR] ") + chalk.yellow(err.code) + ": " + err.path);
+            const parts = line.trim().split(' ');
+            if (parts.length > 1) {
+                const soundName = parts[1].replaceAll('\n', '').replaceAll('\r', '');
+                // Vérifier que le nom du son n'est pas vide
+                if (soundName && soundName.trim() !== '') {
+                    const sound = soundName + ".ogg";
+                    if (!dependencies.includes(sound)) {
+                        try {
+                            dependencies.push({
+                                file: pack + "/assets/dynamxmod/sounds/" + sound,
+                                content: fs.readFileSync(dir + pack + "/assets/dynamxmod/sounds/" + sound),
+                                type: 'audio'
+                            });
+                        } catch (err) {
+                            console.log(chalk.red("[ERROR] ") + chalk.yellow(err.code) + ": " + err.path);
+                        }
+                    }
                 }
             }
         }
