@@ -101,6 +101,14 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
             });
             stepOutputIndicator(pack, command);
             pack.step = 2.7;
+        } else if (command == "8") {
+            console.log(chalk.green("Helicopter selected."));
+            files.helicopter.forEach(file => {
+                console.log(file.file ? chalk.yellow(n) + " - " +  file.file.split("/")[file.file.split("/").length - 1].replace("helicopter_", "").replace(".dynx", "") : chalk.yellow(n) +  " - " + file.dir.split("/")[file.dir.split("/").length - 1].replace("helicopter_", "").replace(".dynx", ""));
+                n++;
+            });
+            stepOutputIndicator(pack, command);
+            pack.step = 2.8;
         }
     } else if (pack.step >= 2 && pack.step < 3) {
         let type = Math.round((pack.step - 2) * 10);
@@ -119,6 +127,7 @@ exports.packCreator = function packCreator(files, input, pack, directory) {
         if (type == 5) { toAdd.forEach((e) => { pack.elements.indexOf(files.block_prop[e]) === -1 ? pack.elements.push(files.block_prop[e]) : null }); }
         if (type == 6) { toAdd.forEach((e) => { pack.elements.indexOf(files.boat[e]) === -1 ? pack.elements.push(files.boat[e]) : null }); }
         if (type == 7) { toAdd.forEach((e) => { pack.elements.indexOf(files.plane[e]) === -1 ? pack.elements.push(files.plane[e]) : null }); }
+        if (type == 8) { toAdd.forEach((e) => { pack.elements.indexOf(files.helicopter[e]) === -1 ? pack.elements.push(files.helicopter[e]) : null }); }
         pack.step = 2;
         stepOutputIndicator(pack);
     }

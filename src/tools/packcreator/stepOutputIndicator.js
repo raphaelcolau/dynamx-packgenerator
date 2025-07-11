@@ -15,6 +15,7 @@ exports.stepOutputIndicator = function stepOutputIndicator(pack, command) {
         console.log(chalk.yellow("5") + " - Block Prop");
         console.log(chalk.yellow("6") + " - Boat");
         console.log(chalk.yellow("7") + " - Plane");
+        console.log(chalk.yellow("8") + " - Helicopter");
         console.log(chalk.yellow("ok") + " - Finish pack creation");
     } else if (pack.step == 2 && command) {
         if (command == "1") {
@@ -42,8 +43,12 @@ exports.stepOutputIndicator = function stepOutputIndicator(pack, command) {
             console.log("You can also put the number separated by a space or a comma to add multiple boats.");
             console.log("Press enter to continue. Type /exit to exit creator mode.");
         } else if (command == "7") {
-            console.log("\nType the number of the trailer you want to add to your pack.");
+            console.log("\nType the number of the plane you want to add to your pack.");
             console.log("You can also put the number separated by a space or a comma to add multiple planes.");
+            console.log("Press enter to continue. Type /exit to exit creator mode.");
+        } else if (command == "8") {
+            console.log("\nType the number of the helicopter you want to add to your pack.");
+            console.log("You can also put the number separated by a space ou une virgule pour ajouter plusieurs hélicoptères.");
             console.log("Press enter to continue. Type /exit to exit creator mode.");
         }
     }
