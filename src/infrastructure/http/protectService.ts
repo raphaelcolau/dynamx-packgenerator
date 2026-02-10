@@ -23,6 +23,8 @@ export class HttpProtectService implements ProtectServicePort {
     try {
       const response = await axios.post(`https://${host}/mprotector/packs/zip`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       });
       if (response.data.dl_link) {
         this.logger.success(`Pack created: ${response.data.dl_link}`);
