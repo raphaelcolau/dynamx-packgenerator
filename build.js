@@ -41,22 +41,22 @@ async function build() {
     }
 
     // 1. Bundle with esbuild
-    console.log('[1/4] Bundling with esbuild...');
+    console.log('[1/5] Bundling with esbuild...');
     run(`pnpm exec esbuild "${ENTRY}" --bundle --platform=node --format=cjs --outfile="${BUNDLE}" ${EXTERNALS}`, 'esbuild');
 
     // 2. Generate SEA blob
-    console.log('[2/4] Generating SEA blob...');
+    console.log('[2/5] Generating SEA blob...');
     run(`node --experimental-sea-config "${SEA_CONFIG}"`, 'sea-config');
 
     // 3. Copy Node binary
-    console.log('[3/4] Copying Node binary...');
+    console.log('[3/5] Copying Node binary...');
     fs.copyFileSync(process.execPath, OUTPUT_BIN);
     if (!isWindows) {
         fs.chmodSync(OUTPUT_BIN, 0o755);
     }
 
     // 4. Inject blob with postject
-    console.log('[4/4] Injecting SEA blob...');
+    console.log('[4/5] Injecting SEA blob...');
     if (isMac) {
         run(
             `pnpm exec postject "${OUTPUT_BIN}" NODE_SEA_BLOB "${BLOB}" --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA`,
@@ -73,6 +73,52 @@ async function build() {
     // Cleanup blob
     if (fs.existsSync(BLOB)) {
         fs.unlinkSync(BLOB);
+    }
+
+    // 5. Apply Windows icon & metadata with resedit (after postject)
+    if (isWindows) {
+        console.log('[5/5] Applying Windows icon & metadata...');
+        const ResEdit = require('resedit');
+        const ICON = path.join(ROOT, 'win-build', 'assets', 'icon.ico');
+        const VERSION = [2, 4, 2, 0];
+
+        const data = fs.readFileSync(OUTPUT_BIN);
+        const exe = ResEdit.NtExecutable.from(data, { ignoreCert: true });
+        const res = ResEdit.NtExecutableResource.from(exe);
+
+        // Set icon
+        console.log('  Setting icon...');
+        const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(ICON));
+        ResEdit.Resource.IconGroupEntry.replaceIconsForResource(
+            res.entries, 101, 1033,
+            iconFile.icons.map((item) => item.data)
+        );
+
+        // Set version metadata
+        console.log('  Setting version metadata...');
+        const viList = ResEdit.Resource.VersionInfo.fromEntries(res.entries);
+        const vi = viList[0];
+        vi.setFileVersion(...VERSION, 1033);
+        vi.setProductVersion(...VERSION, 1033);
+        vi.setStringValues(
+            { lang: 1033, codepage: 1200 },
+            {
+                FileDescription: 'Pack Manager for DynamX',
+                ProductName: 'DynamX Pack Manager',
+                LegalCopyright: 'Raphael Colau https://raphael.colau.fr',
+                OriginalFilename: 'PackManager.exe',
+                FileVersion: VERSION.slice(0, 3).join('.'),
+                ProductVersion: VERSION.slice(0, 3).join('.'),
+            }
+        );
+        vi.outputToResourceEntries(res.entries);
+
+        // Write back
+        console.log('  Writing modified executable...');
+        res.outputResource(exe);
+        const newBinary = exe.generate();
+        fs.writeFileSync(OUTPUT_BIN, Buffer.from(newBinary));
+        console.log('  Icon & metadata applied.');
     }
 
     console.log(`\n=== Build complete: ${OUTPUT_BIN} ===`);

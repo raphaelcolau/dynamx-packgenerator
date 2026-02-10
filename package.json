@@ -30,6 +30,7 @@
     "@types/node": "^25.2.3",
     "esbuild": "^0.25.0",
     "postject": "^1.0.0-alpha.6",
+    "rcedit": "^5.0.2",
     "resedit": "^3.0.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
