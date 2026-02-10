@@ -1,7 +1,7 @@
 import * as p from '@clack/prompts';
 import chalk from 'chalk';
 import { ParsedFiles, DynamxFile, ObjFile } from '../../types';
-import { FileType, FILE_TYPE_LABELS } from '../../constants/fileTypes';
+import { FileType, FILE_TYPE_LABELS, stripFileTypePrefix } from '../../constants/fileTypes';
 
 export async function listPrompt(files: ParsedFiles): Promise<void> {
   const options = Object.values(FileType)
@@ -32,7 +32,8 @@ export async function listPrompt(files: ParsedFiles): Promise<void> {
 
   const entries = fileList.map(file => {
     const origin = 'file' in file ? (file as ObjFile).file : (file as DynamxFile).dir;
-    return origin.split('/').pop() ?? '';
+    const raw = origin.split('/').pop()?.replace('.dynx', '') ?? '';
+    return stripFileTypePrefix(raw);
   }).sort((a, b) => a.localeCompare(b));
 
   const lines: string[] = [];

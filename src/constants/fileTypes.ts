@@ -46,6 +46,13 @@ export const SELECTABLE_TYPES: ReadonlyArray<[FileType, string]> = [
 
 export const ALL_FILE_TYPE_NAMES: readonly string[] = Object.values(FileType);
 
+export function stripFileTypePrefix(name: string): string {
+  for (const [prefix] of FILE_TYPE_PREFIXES) {
+    if (name.startsWith(prefix)) return name.slice(prefix.length);
+  }
+  return name;
+}
+
 export const FILE_TYPE_LABELS: Record<FileType, string> = {
   [FileType.Vehicle]: 'Vehicle',
   [FileType.Trailer]: 'Trailer',

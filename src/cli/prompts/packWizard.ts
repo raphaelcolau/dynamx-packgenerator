@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts';
 import { ParsedFiles, DynamxFile } from '../../types';
-import { SELECTABLE_TYPES, FILE_TYPE_LABELS, FileType } from '../../constants/fileTypes';
+import { SELECTABLE_TYPES, FILE_TYPE_LABELS, FileType, stripFileTypePrefix } from '../../constants/fileTypes';
 import { PackBuilder } from '../../core/pack/packBuilder';
 import { generatePack } from '../../core/pack/packGenerator';
 import { FileSystemPort } from '../../infrastructure/filesystem/fileSystemPort';
@@ -101,7 +101,8 @@ export async function packWizard(
 
           const sortedOptions = fileList
             .map((file, index) => {
-              const displayName = file.dir.split('/').pop()?.replace('.dynx', '') ?? file.name;
+              const raw = file.dir.split('/').pop()?.replace('.dynx', '') ?? file.name;
+              const displayName = stripFileTypePrefix(raw);
               return { value: index, label: displayName };
             })
             .sort((a, b) => a.label.localeCompare(b.label));
