@@ -161,12 +161,8 @@ export async function packWizard(
           builder.setHost(host);
 
           const gameDir = await p.text({
-            message: 'Game root directory',
-            placeholder: 'C:\\Games\\Minecraft',
-            validate: (value) => {
-              if (!(value ?? '').trim()) return 'Game directory is required.';
-              return undefined;
-            },
+            message: 'Game root directory (optional)',
+            placeholder: 'DrawLife',
           });
           if (p.isCancel(gameDir)) {
             step = WizardStep.Protection;
@@ -189,8 +185,8 @@ export async function packWizard(
           const archivePath = await generatePack(files, pack, directory, fs, archiveService, logger);
           s.stop('Pack generated successfully!');
 
-          if (pack.isProtected && pack.host && pack.gameDir) {
-            await handleProtection(archivePath, pack.host, pack.gameDir, pack.packId, protectService);
+          if (pack.isProtected && pack.host) {
+            await handleProtection(archivePath, pack.host, pack.gameDir ?? '', pack.packId, protectService);
           }
         } catch (err) {
           s.stop('Pack generation failed.');
