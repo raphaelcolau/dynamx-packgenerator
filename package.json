@@ -1,30 +1,13 @@
 {
   "name": "dynamx-package-manager",
-  "version": "1.0.0",
+  "version": "2.4.2",
   "description": "Tools for parsing, updating and selling dynamx package",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pkg .",
-    "winbuild": "node ./win-build/win-build.js",
-    "ncc": "ncc build -o dist/lib ./src/index.js"
-  },
-  "pkg": {
-    "assets": [
-      "src/**/*",
-      "package.json",
-      "package-lock.json",
-      "node_modules/**/*"
-    ],
-    "targets": [
-      "node18",
-      "node18-win-x64",
-      "node18-linux-x64",
-      "node18-macos-x64"
-    ],
-    "outputPath": "dist",
-    "outputName": "PackManager"
+    "start": "node src/index.js",
+    "build": "node build.js",
+    "build:win": "node build.js && node ./win-build/win-build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "DynamX-PackManager": "src/index.js"
@@ -34,13 +17,13 @@
   "dependencies": {
     "archiver": "^5.3.1",
     "axios": "^0.27.2",
-    "canvas": "^2.11.2",
     "chalk": "^4.1.2",
     "form-data": "^4.0.0",
     "glob": "^10.3.1"
   },
   "devDependencies": {
-    "@angablue/exe": "^1.2.0",
-    "@babel/plugin-syntax-top-level-await": "^7.14.5"
+    "esbuild": "^0.25.0",
+    "postject": "^1.0.0-alpha.6",
+    "resedit": "^3.0.2"
   }
 }
