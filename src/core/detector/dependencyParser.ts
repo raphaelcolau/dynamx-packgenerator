@@ -34,6 +34,37 @@ export async function parseSoundDependencies(
   return dependencies;
 }
 
+const INLINE_SOUND_PATTERNS = ['HornSound:', 'SirenSound:'] as const;
+
+export async function parseInlineSoundDependencies(
+  file: DynamxFile, packsDir: string, fs: FileSystemPort, logger: Logger
+): Promise<Dependency[]> {
+  const dependencies: Dependency[] = [];
+  const lines = file.content.split('\n');
+  const pack = file.dir.split('/')[0] ?? '';
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    for (const pattern of INLINE_SOUND_PATTERNS) {
+      if (trimmed.startsWith(pattern)) {
+        const soundPath = trimmed.slice(pattern.length).trim().replace(/[\n\r]/g, '');
+        if (!soundPath) continue;
+        const soundFile = soundPath + '.ogg';
+        const soundRelPath = `${pack}/assets/dynamxmod/sounds/${soundFile}`;
+        if (dependencies.some(d => d.file === soundRelPath)) continue;
+        try {
+          const content = await fs.readFileBuffer(path.join(packsDir, pack, 'assets/dynamxmod/sounds', soundFile));
+          dependencies.push({ file: soundRelPath, content, type: 'audio' });
+        } catch (err: unknown) {
+          const error = err as NodeJS.ErrnoException;
+          logger.error(`${error.code ?? 'ERROR'}: ${error.message}`);
+        }
+      }
+    }
+  }
+  return dependencies;
+}
+
 export async function resolveAllObjFiles(
   packsDir: string, fs: FileSystemPort, logger: Logger
 ): Promise<ObjFile[]> {

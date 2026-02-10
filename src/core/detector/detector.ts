@@ -5,7 +5,7 @@ import { Logger } from '../../cli/output/logger';
 import { DynamxFile, ParsedFiles, createEmptyParsedFiles } from '../../types';
 import { detectFileType } from './fileTypeDetector';
 import { parseDynxDependencies } from '../parser/dynxParser';
-import { parseSoundDependencies, resolveAllObjFiles } from './dependencyParser';
+import { parseSoundDependencies, parseInlineSoundDependencies, resolveAllObjFiles } from './dependencyParser';
 import { logParsedFileSummary } from './detectorDisplay';
 
 export async function detect(
@@ -47,7 +47,18 @@ export async function detect(
   }
 
   for (const file of parsedFiles[FileType.Sounds] as DynamxFile[]) {
-    (file as DynamxFile).dependencies = await parseSoundDependencies(file, packsDir, fs, logger) as unknown as string[];
+    file.dependencies = await parseSoundDependencies(file, packsDir, fs, logger);
+  }
+
+  const TYPES_WITH_INLINE_SOUNDS: readonly FileType[] = [
+    FileType.Vehicle, FileType.Trailer, FileType.Boat,
+    FileType.Helicopter, FileType.Plane,
+  ];
+  for (const type of TYPES_WITH_INLINE_SOUNDS) {
+    for (const file of parsedFiles[type] as DynamxFile[]) {
+      const inlineSounds = await parseInlineSoundDependencies(file, packsDir, fs, logger);
+      file.dependencies.push(...inlineSounds);
+    }
   }
 
   parsedFiles.total = computeTotal(parsedFiles);

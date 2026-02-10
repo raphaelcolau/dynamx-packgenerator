@@ -1,4 +1,4 @@
-import { parseSoundDependencies, resolveAllObjFiles } from '../../../src/core/detector/dependencyParser';
+import { parseSoundDependencies, parseInlineSoundDependencies, resolveAllObjFiles } from '../../../src/core/detector/dependencyParser';
 import { MockFileSystem } from '../../helpers/mockFileSystem';
 import { MockLogger } from '../../helpers/mockLogger';
 import { FileType } from '../../../src/constants/fileTypes';
@@ -110,6 +110,112 @@ describe('parseSoundDependencies', () => {
     expect(result).toHaveLength(2);
     expect(result[0].file).toContain('rev_low');
     expect(result[1].file).toContain('rev_high');
+  });
+});
+
+describe('parseInlineSoundDependencies', () => {
+  let fs: MockFileSystem;
+  let logger: MockLogger;
+
+  beforeEach(() => {
+    fs = new MockFileSystem();
+    logger = new MockLogger();
+  });
+
+  it('returns empty array for file without HornSound or SirenSound', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'Name: Sedan\nModel: obj/sedan.obj\nDefaultSounds: pack.sounds_sedan',
+      dir: 'mypack/vehicle_sedan.dynx',
+    });
+    const result = await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(result).toEqual([]);
+  });
+
+  it('extracts single HornSound dependency', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'Name: Sedan\nHornSound: horn',
+      dir: 'mypack/vehicle_sedan.dynx',
+    });
+    fs.addFile('/packs/mypack/assets/dynamxmod/sounds/horn.ogg', 'horn-audio');
+    const result = await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(result).toHaveLength(1);
+    expect(result[0].file).toBe('mypack/assets/dynamxmod/sounds/horn.ogg');
+    expect(result[0].type).toBe('audio');
+  });
+
+  it('extracts single SirenSound dependency', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'Name: Ambulance\nSirenSound: siren',
+      dir: 'mypack/vehicle_ambulance.dynx',
+    });
+    fs.addFile('/packs/mypack/assets/dynamxmod/sounds/siren.ogg', 'siren-audio');
+    const result = await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(result).toHaveLength(1);
+    expect(result[0].file).toBe('mypack/assets/dynamxmod/sounds/siren.ogg');
+    expect(result[0].type).toBe('audio');
+  });
+
+  it('extracts both HornSound and SirenSound', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'Name: Police\nHornSound: horn\nSirenSound: siren',
+      dir: 'mypack/vehicle_police.dynx',
+    });
+    fs.addFile('/packs/mypack/assets/dynamxmod/sounds/horn.ogg', 'horn-audio');
+    fs.addFile('/packs/mypack/assets/dynamxmod/sounds/siren.ogg', 'siren-audio');
+    const result = await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(result).toHaveLength(2);
+    expect(result.map(d => d.file)).toContain('mypack/assets/dynamxmod/sounds/horn.ogg');
+    expect(result.map(d => d.file)).toContain('mypack/assets/dynamxmod/sounds/siren.ogg');
+  });
+
+  it('handles path with subdirectory (horn/car)', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'HornSound: horn/car',
+      dir: 'mypack/vehicle_sedan.dynx',
+    });
+    fs.addFile('/packs/mypack/assets/dynamxmod/sounds/horn/car.ogg', 'car-horn-audio');
+    const result = await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(result).toHaveLength(1);
+    expect(result[0].file).toBe('mypack/assets/dynamxmod/sounds/horn/car.ogg');
+  });
+
+  it('deduplicates identical sound paths', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'HornSound: horn\nHornSound: horn',
+      dir: 'mypack/vehicle_sedan.dynx',
+    });
+    fs.addFile('/packs/mypack/assets/dynamxmod/sounds/horn.ogg', 'horn-audio');
+    const result = await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(result).toHaveLength(1);
+  });
+
+  it('logs error for missing .ogg file', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'HornSound: missing_horn',
+      dir: 'mypack/vehicle_sedan.dynx',
+    });
+    await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(logger.getErrors().length).toBeGreaterThan(0);
+    expect(logger.hasMessage('ENOENT')).toBe(true);
+  });
+
+  it('uses correct pack name from file.dir', async () => {
+    const file = createDynamxFile({
+      type: FileType.Vehicle,
+      content: 'SirenSound: ambulance_siren',
+      dir: 'custompack/vehicles/vehicle_ambulance.dynx',
+    });
+    fs.addFile('/packs/custompack/assets/dynamxmod/sounds/ambulance_siren.ogg', 'siren-data');
+    const result = await parseInlineSoundDependencies(file, '/packs', fs, logger);
+    expect(result).toHaveLength(1);
+    expect(result[0].file).toBe('custompack/assets/dynamxmod/sounds/ambulance_siren.ogg');
   });
 });
 

@@ -138,15 +138,61 @@ describe('Detector → Pack Integration', () => {
     expect(packInfo.content).toBeTruthy();
   });
 
+  it('should include inline HornSound dependency for detected vehicle', async () => {
+    // Add horn sound .ogg file for the vehicle's HornSound reference
+    fs.addFile(
+      '/test/Packs/MyPack/vehicle_police.dynx',
+      'Name: Police Car\nModel: obj/police.obj\nHornSound: horn\nSirenSound: siren'
+    );
+    fs.addFile('/test/Packs/MyPack/assets/dynamxmod/sounds/horn.ogg', 'horn-audio-data');
+    fs.addFile('/test/Packs/MyPack/assets/dynamxmod/sounds/siren.ogg', 'siren-audio-data');
+
+    const parsed = await detect(dir, fs, logger);
+    const vehicles = parsed[FileType.Vehicle] as DynamxFile[];
+    const police = vehicles.find(v => v.name === 'vehicle_police');
+    expect(police).toBeDefined();
+
+    // Should have string deps (Model) + inline sound Dependency objects
+    const soundDeps = police!.dependencies.filter(d => typeof d === 'object' && d.type === 'audio');
+    expect(soundDeps).toHaveLength(2);
+    const soundFiles = soundDeps.map(d => (d as any).file);
+    expect(soundFiles).toContain('MyPack/assets/dynamxmod/sounds/horn.ogg');
+    expect(soundFiles).toContain('MyPack/assets/dynamxmod/sounds/siren.ogg');
+  });
+
+  it('should include horn sound in full pack generation flow', async () => {
+    fs.addFile(
+      '/test/Packs/MyPack/vehicle_firetruck.dynx',
+      'Name: Fire Truck\nHornSound: horn/truck'
+    );
+    fs.addFile('/test/Packs/MyPack/assets/dynamxmod/sounds/horn/truck.ogg', 'truck-horn-audio');
+
+    const parsed = await detect(dir, fs, logger);
+    const vehicles = parsed[FileType.Vehicle] as DynamxFile[];
+    const firetruck = vehicles.find(v => v.name === 'vehicle_firetruck');
+    expect(firetruck).toBeDefined();
+
+    const builder = new PackBuilder();
+    builder.setPackId('fire01');
+    builder.addElement(firetruck!);
+    const pack = builder.build();
+
+    // The pack element should carry the horn sound dependency
+    const hornDep = pack.elements[0].dependencies.find(
+      d => typeof d === 'object' && (d as any).file?.includes('horn/truck.ogg')
+    );
+    expect(hornDep).toBeDefined();
+  });
+
   it('should preserve dependencies for detected vehicle files', async () => {
     const parsed = await detect(dir, fs, logger);
     const vehicles = parsed[FileType.Vehicle] as DynamxFile[];
-    const deps = vehicles[0].dependencies as string[];
+    const stringDeps = vehicles[0].dependencies.filter(d => typeof d === 'string');
 
-    expect(deps).toContain('obj/sedan.obj');
-    expect(deps).toContain('engine_v6');
-    expect(deps).toContain('sounds_sport');
-    expect(deps).toContain('wheel_basic');
+    expect(stringDeps).toContain('obj/sedan.obj');
+    expect(stringDeps).toContain('engine_v6');
+    expect(stringDeps).toContain('sounds_sport');
+    expect(stringDeps).toContain('wheel_basic');
   });
 
   it('should deduplicate elements when added to PackBuilder', async () => {

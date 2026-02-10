@@ -5,7 +5,7 @@ export interface DynamxFile {
   readonly name: string;
   readonly dir: string;
   readonly content: string;
-  dependencies: string[] | Dependency[];
+  dependencies: (string | Dependency)[];
 }
 
 export interface Dependency {
