@@ -101,8 +101,8 @@ export async function packWizard(
 
           const sortedOptions = fileList
             .map((file, index) => {
-              const raw = file.dir.split('/').pop()?.replace('.dynx', '') ?? file.name;
-              const displayName = stripFileTypePrefix(raw);
+              const fallback = file.dir.split('/').pop()?.replace('.dynx', '') ?? '';
+              const displayName = file.name || stripFileTypePrefix(fallback);
               return { value: index, label: displayName };
             })
             .sort((a, b) => a.label.localeCompare(b.label));
