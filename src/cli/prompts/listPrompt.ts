@@ -31,12 +31,13 @@ export async function listPrompt(files: ParsedFiles): Promise<void> {
   if (!fileList) return;
 
   const entries = fileList.map(file => {
-    if ('name' in file && (file as DynamxFile).name) {
-      return (file as DynamxFile).name;
-    }
     const origin = 'file' in file ? (file as ObjFile).file : (file as DynamxFile).dir;
     const raw = origin.split('/').pop()?.replace('.dynx', '') ?? '';
-    return stripFileTypePrefix(raw);
+    const itemName = stripFileTypePrefix(raw);
+    if ('name' in file && (file as DynamxFile).name) {
+      return `${(file as DynamxFile).name} - ${itemName}`;
+    }
+    return itemName;
   }).sort((a, b) => a.localeCompare(b));
 
   const lines: string[] = [];
