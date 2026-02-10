@@ -42,7 +42,7 @@ async function build() {
 
     // 1. Bundle with esbuild
     console.log('[1/4] Bundling with esbuild...');
-    run(`npx esbuild "${ENTRY}" --bundle --platform=node --format=cjs --outfile="${BUNDLE}" ${EXTERNALS}`, 'esbuild');
+    run(`pnpm exec esbuild "${ENTRY}" --bundle --platform=node --format=cjs --outfile="${BUNDLE}" ${EXTERNALS}`, 'esbuild');
 
     // 2. Generate SEA blob
     console.log('[2/4] Generating SEA blob...');
@@ -59,13 +59,13 @@ async function build() {
     console.log('[4/4] Injecting SEA blob...');
     if (isMac) {
         run(
-            `npx postject "${OUTPUT_BIN}" NODE_SEA_BLOB "${BLOB}" --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA`,
+            `pnpm exec postject "${OUTPUT_BIN}" NODE_SEA_BLOB "${BLOB}" --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA`,
             'postject'
         );
         run(`codesign --sign - "${OUTPUT_BIN}"`, 'codesign');
     } else {
         run(
-            `npx postject "${OUTPUT_BIN}" NODE_SEA_BLOB "${BLOB}" --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
+            `pnpm exec postject "${OUTPUT_BIN}" NODE_SEA_BLOB "${BLOB}" --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`,
             'postject'
         );
     }

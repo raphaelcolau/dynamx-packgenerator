@@ -133,3 +133,6 @@ dist
 
 
 desktop.ini
+
+# npm lockfile (using pnpm)
+package-lock.json
