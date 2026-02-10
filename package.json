@@ -2,15 +2,17 @@
   "name": "dynamx-package-manager",
   "version": "2.4.2",
   "description": "Tools for parsing, updating and selling dynamx package",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "tsx src/index.ts",
     "build": "node build.js",
     "build:win": "node build.js && node ./win-build/win-build.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "bin": {
-    "DynamX-PackManager": "src/index.js"
+    "DynamX-PackManager": "src/index.ts"
   },
   "author": "Raphael Colau",
   "license": "ISC",
@@ -23,11 +25,18 @@
     "glob": "^10.3.1"
   },
   "devDependencies": {
+    "@types/archiver": "^7.0.0",
+    "@types/node": "^25.2.3",
     "esbuild": "^0.25.0",
     "postject": "^1.0.0-alpha.6",
-    "resedit": "^3.0.2"
+    "resedit": "^3.0.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

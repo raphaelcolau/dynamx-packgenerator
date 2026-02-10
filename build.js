@@ -4,7 +4,7 @@ const path = require('path');
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, 'dist');
-const ENTRY = path.join(ROOT, 'src', 'index.js');
+const ENTRY = path.join(ROOT, 'src', 'index.ts');
 const BUNDLE = path.join(DIST, 'bundle.cjs');
 const BLOB = path.join(DIST, 'sea-prep.blob');
 const SEA_CONFIG = path.join(ROOT, 'sea-config.json');
