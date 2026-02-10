@@ -1,7 +1,6 @@
 import path from 'path';
 import { FileSystemPort } from '../../infrastructure/filesystem/fileSystemPort';
 import { ArchiveServicePort } from '../../infrastructure/archive/archiveService';
-import { ProtectServicePort } from '../../infrastructure/http/protectService';
 import { Logger } from '../../cli/output/logger';
 import { ParsedFiles, Pack } from '../../types';
 import { resolveDependency } from './dependencyResolver';
@@ -11,9 +10,8 @@ import { Dependency } from '../../types';
 
 export async function generatePack(
   files: ParsedFiles, pack: Pack, directory: string,
-  fs: FileSystemPort, archiveService: ArchiveServicePort,
-  protectService: ProtectServicePort, logger: Logger
-): Promise<void> {
+  fs: FileSystemPort, archiveService: ArchiveServicePort, logger: Logger
+): Promise<string> {
   const outputDir = path.join(directory, 'builds', pack.packId) + '/';
   logger.success(`Pack output directory: ${outputDir}`);
   await fs.mkdir(outputDir, { recursive: true });
@@ -35,7 +33,7 @@ export async function generatePack(
     fs.statSync(path.join(outputDir, item)).isDirectory()
   );
   const packFolderName = subdirs[0];
-  if (!packFolderName) { logger.error('No pack folder found in output directory.'); return; }
+  if (!packFolderName) { throw new Error('No pack folder found in output directory.'); }
 
   const packInfo = resolvePackInfo(files, packFolderName);
   const packInfoDir = path.dirname(path.join(outputDir, packInfo.dir));
@@ -52,10 +50,7 @@ export async function generatePack(
   const archiveName = `${packFolderName}-${pack.packId}.dnxpack`;
   const archivePath = path.join(outputDir, archiveName);
   await archiveService.createZip(path.join(outputDir, packFolderName), archivePath);
+  logger.success(`Pack created: ${archivePath}`);
 
-  if (pack.isProtected && pack.host && pack.gameDir) {
-    await protectService.protectPack(archivePath, pack.host, pack.gameDir, pack.packId);
-  } else {
-    logger.success(`Pack created: ${archivePath}`);
-  }
+  return archivePath;
 }
