@@ -54,7 +54,7 @@ describe('Detector → Pack Integration', () => {
     const parsed = await detect(dir, fs, logger);
     const vehicles = parsed[FileType.Vehicle] as DynamxFile[];
     expect(vehicles).toHaveLength(1);
-    expect(vehicles[0].name).toBe('vehicle_sedan');
+    expect(vehicles[0].name).toBe('Sedan');
     expect(vehicles[0].type).toBe(FileType.Vehicle);
   });
 
@@ -62,7 +62,7 @@ describe('Detector → Pack Integration', () => {
     const parsed = await detect(dir, fs, logger);
     const armors = parsed[FileType.Armor] as DynamxFile[];
     expect(armors).toHaveLength(1);
-    expect(armors[0].name).toBe('armor_vest');
+    expect(armors[0].name).toBe('Vest');
     expect(armors[0].type).toBe(FileType.Armor);
   });
 
@@ -84,7 +84,7 @@ describe('Detector → Pack Integration', () => {
 
     expect(pack.packId).toBe('test01');
     expect(pack.elements).toHaveLength(1);
-    expect(pack.elements[0].name).toBe('vehicle_sedan');
+    expect(pack.elements[0].name).toBe('Sedan');
   });
 
   it('should generate correct lang file content from detected files', async () => {
@@ -149,7 +149,7 @@ describe('Detector → Pack Integration', () => {
 
     const parsed = await detect(dir, fs, logger);
     const vehicles = parsed[FileType.Vehicle] as DynamxFile[];
-    const police = vehicles.find(v => v.name === 'vehicle_police');
+    const police = vehicles.find(v => v.name === 'Police Car');
     expect(police).toBeDefined();
 
     // Should have string deps (Model) + inline sound Dependency objects
@@ -169,7 +169,7 @@ describe('Detector → Pack Integration', () => {
 
     const parsed = await detect(dir, fs, logger);
     const vehicles = parsed[FileType.Vehicle] as DynamxFile[];
-    const firetruck = vehicles.find(v => v.name === 'vehicle_firetruck');
+    const firetruck = vehicles.find(v => v.name === 'Fire Truck');
     expect(firetruck).toBeDefined();
 
     const builder = new PackBuilder();

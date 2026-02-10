@@ -4,7 +4,7 @@ import { FileSystemPort } from '../../infrastructure/filesystem/fileSystemPort';
 import { Logger } from '../../cli/output/logger';
 import { DynamxFile, ParsedFiles, createEmptyParsedFiles } from '../../types';
 import { detectFileType } from './fileTypeDetector';
-import { parseDynxDependencies } from '../parser/dynxParser';
+import { parseDynxDependencies, parseDynxName } from '../parser/dynxParser';
 import { parseSoundDependencies, parseInlineSoundDependencies, resolveAllObjFiles } from './dependencyParser';
 import { logParsedFileSummary } from './detectorDisplay';
 
@@ -35,7 +35,8 @@ export async function detect(
     const normalizedDir = filePath.replaceAll('\\', '/');
     const lastSep = Math.max(filePath.lastIndexOf('\\'), filePath.lastIndexOf('/'));
     const lastDot = filePath.lastIndexOf('.dynx');
-    const name = filePath.substring(lastSep + 1, lastDot);
+    const fileName = filePath.substring(lastSep + 1, lastDot);
+    const name = parseDynxName(content) ?? fileName;
     const dynxFile: DynamxFile = { type, name, dir: normalizedDir, content, dependencies: [] };
     (parsedFiles[type] as DynamxFile[]).push(dynxFile);
   }

@@ -41,7 +41,7 @@ describe('detect', () => {
 
     expect(result[FileType.Vehicle]).toHaveLength(1);
     expect(result[FileType.Vehicle][0].type).toBe(FileType.Vehicle);
-    expect(result[FileType.Vehicle][0].name).toBe('vehicle_car');
+    expect(result[FileType.Vehicle][0].name).toBe('MyCar');
   });
 
   it('correctly categorizes a trailer .dynx file', async () => {
@@ -52,7 +52,7 @@ describe('detect', () => {
 
     expect(result[FileType.Trailer]).toHaveLength(1);
     expect(result[FileType.Trailer][0].type).toBe(FileType.Trailer);
-    expect(result[FileType.Trailer][0].name).toBe('trailer_flat');
+    expect(result[FileType.Trailer][0].name).toBe('FlatTrailer');
   });
 
   it('correctly categorizes multiple file types', async () => {
