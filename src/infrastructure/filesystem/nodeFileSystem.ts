@@ -34,7 +34,7 @@ export class NodeFileSystem implements FileSystemPort {
   statSync(filePath: string): { isDirectory(): boolean } { return fs.statSync(filePath); }
 
   async glob(pattern: string, options?: GlobOptions): Promise<string[]> {
-    return globLib(pattern, options ?? {});
+    return globLib(pattern, { follow: true, ...options });
   }
 
   async rm(dirPath: string, options?: { recursive?: boolean; force?: boolean }): Promise<void> {

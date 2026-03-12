@@ -1,5 +1,6 @@
 export interface GlobOptions {
   cwd?: string;
+  follow?: boolean;
 }
 
 export interface FileSystemPort {
